@@ -17,7 +17,7 @@ type MinIO struct {
 	Cnf    *config.Config
 }
 
-var bucketName = "ccenter-news"
+var bucketName = "ccenter"
 
 func MinIOConnect(cnf *config.Config) (*MinIO, error) {
 	endpoint := cnf.MINIO_ENDPOINT

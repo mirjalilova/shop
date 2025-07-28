@@ -17,15 +17,15 @@ services:
         condition: service_started
   minio:
     image: minio/minio
-    container_name: minioo
+    container_name: minio
     environment:
       - MINIO_ROOT_USER=${MINIO_ACCESS_KEY}
       - MINIO_ROOT_PASSWORD=${MINIO_SECRET_KEY}
       - MINIO_ENDPOINT=${MINIO_ENDPOINT}
     ports:
-      - "9005:9005"   
-      - "9006:9006" 
-    command: server /data --console-address ":9006"
+      - "9000:9000"   
+      - "9001:9001" 
+    command: server /data --console-address ":9001"
     # volumes:
     #   - minio_data:/data
     networks:
