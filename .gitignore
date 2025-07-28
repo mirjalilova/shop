@@ -1,0 +1,3 @@
+./internal/media
+Dockerfile
+docker-compose.yaml

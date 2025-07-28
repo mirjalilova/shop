@@ -1,0 +1,698 @@
+basePath: /
+definitions:
+  entity.CategoryCreate:
+    properties:
+      name:
+        type: string
+    type: object
+  entity.CategoryGetAllRes:
+    properties:
+      Categorys:
+        items:
+          $ref: '#/definitions/entity.CategoryRes'
+        type: array
+      count:
+        type: integer
+    type: object
+  entity.CategoryRes:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  entity.CreateUser:
+    properties:
+      name:
+        type: string
+      password:
+        type: string
+      phone_number:
+        type: string
+    type: object
+  entity.LoginReq:
+    properties:
+      login:
+        type: string
+      password:
+        type: string
+    type: object
+  entity.LoginRes:
+    properties:
+      message:
+        type: string
+      token:
+        type: string
+    type: object
+  entity.ShoesCreate:
+    properties:
+      category_id:
+        type: string
+      color:
+        items:
+          type: string
+        type: array
+      description:
+        type: string
+      img_url:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+      price:
+        type: number
+      size:
+        items:
+          type: integer
+        type: array
+    type: object
+  entity.ShoesGetAllRes:
+    properties:
+      count:
+        type: integer
+      shoess:
+        items:
+          $ref: '#/definitions/entity.ShoesRes'
+        type: array
+    type: object
+  entity.ShoesRes:
+    properties:
+      category_id:
+        type: string
+      color:
+        items:
+          type: string
+        type: array
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      img_url:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+      price:
+        type: number
+      size:
+        items:
+          type: integer
+        type: array
+    type: object
+  entity.UpdateUserBody:
+    properties:
+      name:
+        type: string
+      phone_number:
+        type: string
+    type: object
+  entity.UserInfo:
+    properties:
+      created_at:
+        type: string
+      debt:
+        type: number
+      id:
+        type: string
+      name:
+        type: string
+      phone_number:
+        type: string
+    type: object
+  entity.UserList:
+    properties:
+      count:
+        type: integer
+      users:
+        items:
+          $ref: '#/definitions/entity.UserInfo'
+        type: array
+    type: object
+info:
+  contact: {}
+  description: This is a sample server Ccenter News server.
+  title: Ccenter News API
+  version: "1.0"
+paths:
+  /category/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a new Category with the provided details
+      parameters:
+      - description: Category Details
+        in: body
+        name: Category
+        required: true
+        schema:
+          $ref: '#/definitions/entity.CategoryCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Create a new Category
+      tags:
+      - Category
+  /category/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Delete an Category by ID
+      parameters:
+      - description: Category ID
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Category deleted successfully
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Delete an Category
+      tags:
+      - Category
+  /category/get:
+    get:
+      consumes:
+      - application/json
+      description: Get an Category by their ID
+      parameters:
+      - description: Category ID
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.CategoryRes'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get Category by ID
+      tags:
+      - Category
+  /category/list:
+    get:
+      consumes:
+      - application/json
+      description: Get all Categories with optional filtering
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.CategoryGetAllRes'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get all Categories
+      tags:
+      - Category
+  /category/update:
+    put:
+      consumes:
+      - application/json
+      description: Update an Category's details
+      parameters:
+      - description: Category ID
+        in: query
+        name: id
+        required: true
+        type: string
+      - description: Category Update Details
+        in: body
+        name: Category
+        required: true
+        schema:
+          $ref: '#/definitions/entity.CategoryCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Update an Category
+      tags:
+      - Category
+  /img-upload:
+    post:
+      consumes:
+      - multipart/form-data
+      description: File upload
+      parameters:
+      - description: File
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: File upload
+      tags:
+      - file-upload
+  /shoes/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a new Shoes with the provided details
+      parameters:
+      - description: Shoes Details
+        in: body
+        name: Banner
+        required: true
+        schema:
+          $ref: '#/definitions/entity.ShoesCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.ShoesCreate'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Create a new Shoes
+      tags:
+      - Shoes
+  /shoes/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Delete an Shoes by ID
+      parameters:
+      - description: Shoes ID
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Shoes deleted successfully
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Delete an Shoes
+      tags:
+      - Shoes
+  /shoes/get:
+    get:
+      consumes:
+      - application/json
+      description: Get an Shoes by their ID
+      parameters:
+      - description: Shoes ID
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.ShoesRes'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get Shoes by ID
+      tags:
+      - Shoes
+  /shoes/list:
+    get:
+      consumes:
+      - application/json
+      description: Get all Shoes with optional filtering
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.ShoesGetAllRes'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get all Shoes
+      tags:
+      - Shoes
+  /shoes/update:
+    put:
+      consumes:
+      - application/json
+      description: Update an Shoes's details
+      parameters:
+      - description: Shoes ID
+        in: query
+        name: id
+        required: true
+        type: string
+      - description: Shoes Update Details
+        in: body
+        name: Shoes
+        required: true
+        schema:
+          $ref: '#/definitions/entity.ShoesCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Update an Shoes
+      tags:
+      - Shoes
+  /users/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user with the provided details
+      parameters:
+      - description: User Details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/entity.CreateUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Create a new user
+      tags:
+      - Users
+  /users/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a User by ID
+      parameters:
+      - description: User ID
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User deleted successfully
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Delete a User
+      tags:
+      - Users
+  /users/get:
+    get:
+      consumes:
+      - application/json
+      description: Get a User by their ID
+      parameters:
+      - description: User ID
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.UserInfo'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get User by ID
+      tags:
+      - Users
+  /users/list:
+    get:
+      consumes:
+      - application/json
+      description: Get all Users with optional filtering
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.UserList'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get all Users
+      tags:
+      - Users
+  /users/login:
+    post:
+      consumes:
+      - application/json
+      description: User login with phone number and password
+      parameters:
+      - description: User Login Details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/entity.LoginReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.LoginRes'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: User login
+      tags:
+      - Users
+  /users/update:
+    put:
+      consumes:
+      - application/json
+      description: Update a User's details
+      parameters:
+      - description: User ID
+        in: query
+        name: id
+        required: true
+        type: string
+      - description: User Update Details
+        in: body
+        name: User
+        required: true
+        schema:
+          $ref: '#/definitions/entity.UpdateUserBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Update a User
+      tags:
+      - Users
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
