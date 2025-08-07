@@ -32,8 +32,8 @@ func TimeoutMiddleware(timeout time.Duration) gin.HandlerFunc {
 
 // NewRouter -.
 // Swagger spec:
-// @title       Ccenter News API
-// @description This is a sample server Ccenter News server.
+// @title       Shop News API
+// @description This is a sample server SHop News server.
 // @version     1.0
 // @BasePath    /
 // @securityDefinitions.apikey BearerAuth

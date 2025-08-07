@@ -128,8 +128,8 @@ definitions:
     type: object
 info:
   contact: {}
-  description: This is a sample server Ccenter News server.
-  title: Ccenter News API
+  description: This is a sample server SHop News server.
+  title: Shop News API
   version: "1.0"
 paths:
   /category/create:

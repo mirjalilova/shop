@@ -17,7 +17,7 @@ type MinIO struct {
 	Cnf    *config.Config
 }
 
-var bucketName = "ccenter"
+var bucketName = "shop"
 
 func MinIOConnect(cnf *config.Config) (*MinIO, error) {
 	endpoint := cnf.MINIO_ENDPOINT
@@ -85,9 +85,9 @@ func (m *MinIO) Upload(fileName, filePath string) (string, error) {
 		return "", err
 	}
 
-	serverHost := "minio"
-	domain := "ccenter.uz"
-	minioURL := fmt.Sprintf("https://%s.%s/%s/%s", serverHost, domain, bucketName, fileName)
+	// serverHost := "minio"
+	// domain := "31.187.74.228"
+	minioURL := fmt.Sprintf("https://%s.%s/%s/%s", "31.187.74.228", ":9002", bucketName, fileName)
 
 	return minioURL, nil
 }
