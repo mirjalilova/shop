@@ -6,9 +6,10 @@ import (
 	"mime"
 	"path/filepath"
 
+	"shop/config"
+
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
-	"shop/config"
 	"golang.org/x/exp/slog"
 )
 
@@ -87,7 +88,7 @@ func (m *MinIO) Upload(fileName, filePath string) (string, error) {
 
 	// serverHost := "minio"
 	// domain := "31.187.74.228"
-	minioURL := fmt.Sprintf("https://%s.%s/%s/%s", "31.187.74.228", ":9002", bucketName, fileName)
+	minioURL := fmt.Sprintf("http://%s:%d/%s/%s", "31.187.74.228", 9002, bucketName, fileName)
 
 	return minioURL, nil
 }
