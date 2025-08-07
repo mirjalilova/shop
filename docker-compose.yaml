@@ -25,9 +25,9 @@ services:
     ports:
       - "9002:9002"   
       - "9003:9003" 
-    command: server /data --console-address ":9003"
-    # volumes:
-    #   - minio_data:/data
+    command: server /data --address ":9002" --console-address ":9003"
+    volumes:
+      - minio_data:/data
     networks:
       - shop_ntwrk
   
@@ -39,7 +39,7 @@ services:
       POSTGRES_PASSWORD: 1111
       POSTGRES_DB: shoes_shop
     ports:
-      - "5436:5432"
+      - "5434:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -65,5 +65,5 @@ networks:
 volumes:
   postgres_data:
     driver: local
-  # minio_data:
-  #   driver: local
+  minio_data:
+    driver: local
