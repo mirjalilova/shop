@@ -25,7 +25,7 @@ func MinIOConnect(cnf *config.Config) (*MinIO, error) {
 	accessKeyID := cnf.MINIO_ACCESS_KEY
 	secretAccessKey := cnf.MINIO_SECRET_KEY
 
-	minioClient, err := minio.New("shop_minio:9002", &minio.Options{
+	minioClient, err := minio.New("31.187.74.228:9002", &minio.Options{
 		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
 		Secure: false,
 	})
