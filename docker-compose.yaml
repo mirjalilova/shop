@@ -5,7 +5,7 @@ services:
     env_file:
       - .env
     ports:
-      - 3030:3030
+      - 8181:8181
     networks:
       - shop_ntwrk  
     environment:

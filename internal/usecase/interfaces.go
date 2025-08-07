@@ -20,12 +20,12 @@ type (
 		Delete(ctx context.Context, req *entity.ById) error
 	}
 
-	// ShoesRepo -.
-	ShoesRepoI interface {
-		Create(ctx context.Context, req *entity.ShoesCreate) error
-		GetById(ctx context.Context, req *entity.ById) (*entity.ShoesRes, error)
-		GetAll(ctx context.Context, req *entity.Filter) (*entity.ShoesGetAllRes, error)
-		Update(ctx context.Context, req *entity.ShoesUpdate) error
+	// ProductRepo -.
+	ProductRepoI interface {
+		Create(ctx context.Context, req *entity.ProductCreate) error
+		GetById(ctx context.Context, req *entity.ById) (*entity.ProductRes, error)
+		GetAll(ctx context.Context, req *entity.Filter) (*entity.ProductGetAllRes, error)
+		Update(ctx context.Context, req *entity.ProductUpdate) error
 		Delete(ctx context.Context, req *entity.ById) error
 	}
 

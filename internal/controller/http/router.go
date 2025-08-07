@@ -93,10 +93,10 @@ func NewRouter(engine *gin.Engine, l *logger.Logger, config *config.Config, useC
 
 	shoes := engine.Group("/shoes")
 	{
-		shoes.GET("/get", handlerV1.GetByIdShoes)
-		shoes.GET("/list", handlerV1.GetAllShoes)
-		shoes.POST("/create", handlerV1.CreateShoes)
-		shoes.PUT("/update", handlerV1.UpdateShoes)
-		shoes.DELETE("/delete", handlerV1.DeleteShoes)
+		shoes.GET("/get", handlerV1.GetByIdProduct)
+		shoes.GET("/list", handlerV1.GetAllProduct)
+		shoes.POST("/create", handlerV1.CreateProduct)
+		shoes.PUT("/update", handlerV1.UpdateProduct)
+		shoes.DELETE("/delete", handlerV1.DeleteProduct)
 	}
 }

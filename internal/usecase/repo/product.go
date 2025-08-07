@@ -14,39 +14,41 @@ import (
 	"shop/pkg/postgres"
 )
 
-type ShoesRepo struct {
+type ProductRepo struct {
 	pg     *postgres.Postgres
 	config *config.Config
 	logger *logger.Logger
 }
 
 // New -.
-func NewShoesRepo(pg *postgres.Postgres, config *config.Config, logger *logger.Logger) *ShoesRepo {
-	return &ShoesRepo{
+func NewProductRepo(pg *postgres.Postgres, config *config.Config, logger *logger.Logger) *ProductRepo {
+	return &ProductRepo{
 		pg:     pg,
 		config: config,
 		logger: logger,
 	}
 }
 
-func (r *ShoesRepo) Create(ctx context.Context, req *entity.ShoesCreate) error {
+func (r *ProductRepo) Create(ctx context.Context, req *entity.ProductCreate) error {
 	query := `
-		INSERT INTO shoes (
+		INSERT INTO products (
 			name,
 			size,
-			color,
+			type,
 			img_url,
 			price,
+			count,
 			description,
 			category_id
-		) VALUES($1, $2, $3, $4, $5, $6, $7)`
+		) VALUES($1, $2, $3, $4, $5, $6, $7, $8)`
 
 	_, err := r.pg.Pool.Exec(ctx, query,
 		req.Name,
 		req.Size,
-		req.Color,
+		req.Type,
 		req.ImgUrl,
 		req.Price,
+		req.Count,
 		req.Description,
 		req.CategoryId,
 	)
@@ -57,9 +59,9 @@ func (r *ShoesRepo) Create(ctx context.Context, req *entity.ShoesCreate) error {
 	return nil
 }
 
-func (r *ShoesRepo) GetById(ctx context.Context, req *entity.ById) (*entity.ShoesRes, error) {
+func (r *ProductRepo) GetById(ctx context.Context, req *entity.ById) (*entity.ProductRes, error) {
 
-	var res entity.ShoesRes
+	var res entity.ProductRes
 	var createdAt time.Time
 
 	query := `
@@ -67,14 +69,15 @@ func (r *ShoesRepo) GetById(ctx context.Context, req *entity.ById) (*entity.Shoe
 		id,
 		name,
 		size,
-		color,
+		type,
 		img_url,
 		price,
+		count,
 		description,
 		category_id,
 		created_at
 	FROM
-		shoes
+		products
 	WHERE
 		deleted_at = 0
 	AND 
@@ -86,9 +89,10 @@ func (r *ShoesRepo) GetById(ctx context.Context, req *entity.ById) (*entity.Shoe
 		&res.Id,
 		&res.Name,
 		&res.Size,
-		&res.Color,
+		&res.Type,
 		&res.ImgUrl,
 		&res.Price,
+		&res.Count,
 		&res.Description,
 		&res.CategoryId,
 		&createdAt,
@@ -101,9 +105,9 @@ func (r *ShoesRepo) GetById(ctx context.Context, req *entity.ById) (*entity.Shoe
 	return &res, nil
 }
 
-func (r *ShoesRepo) GetAll(ctx context.Context, req *entity.Filter) (*entity.ShoesGetAllRes, error) {
+func (r *ProductRepo) GetAll(ctx context.Context, req *entity.Filter) (*entity.ProductGetAllRes, error) {
 
-	resp := &entity.ShoesGetAllRes{}
+	resp := &entity.ProductGetAllRes{}
 
 	query := `
 	SELECT
@@ -111,14 +115,15 @@ func (r *ShoesRepo) GetAll(ctx context.Context, req *entity.Filter) (*entity.Sho
 		id,
 		name,
 		size,
-		color,
+		type,
 		img_url,
 		price,
+		count,
 		description,
 		category_id,
 		created_at
 	FROM
-		shoes
+		products
 	WHERE
 		deleted_at = 0
 	`
@@ -143,7 +148,7 @@ func (r *ShoesRepo) GetAll(ctx context.Context, req *entity.Filter) (*entity.Sho
 	defer rows.Close()
 
 	for rows.Next() {
-		res := entity.ShoesRes{}
+		res := entity.ProductRes{}
 		var count int
 		var createdAt time.Time
 
@@ -152,9 +157,10 @@ func (r *ShoesRepo) GetAll(ctx context.Context, req *entity.Filter) (*entity.Sho
 			&res.Id,
 			&res.Name,
 			&res.Size,
-			&res.Color,
+			&res.Type,
 			&res.ImgUrl,
 			&res.Price,
+			&res.Count,
 			&res.Description,
 			&res.CategoryId,
 			&createdAt,
@@ -164,17 +170,17 @@ func (r *ShoesRepo) GetAll(ctx context.Context, req *entity.Filter) (*entity.Sho
 		}
 		res.CreatedAt = createdAt.Format("2006-01-02 15:04:05")
 
-		resp.Shoess = append(resp.Shoess, res)
+		resp.Products = append(resp.Products, res)
 		resp.Count = count
 	}
 
 	return resp, nil
 }
 
-func (r *ShoesRepo) Update(ctx context.Context, req *entity.ShoesUpdate) error {
+func (r *ProductRepo) Update(ctx context.Context, req *entity.ProductUpdate) error {
 	query := `
 	UPDATE
-		shoes
+		products
 	SET`
 
 	var conditions []string
@@ -184,21 +190,25 @@ func (r *ShoesRepo) Update(ctx context.Context, req *entity.ShoesUpdate) error {
 		conditions = append(conditions, " name = $"+strconv.Itoa(len(args)+1))
 		args = append(args, req.Name)
 	}
-	if len(req.Size) > 0 {
+	if req.Size > 0 {
 		conditions = append(conditions, " size = $"+strconv.Itoa(len(args)+1))
 		args = append(args, req.Size)
 	}
-	if len(req.Color) > 0 {
+	if req.Type > "" && req.Type != "string" {
 		conditions = append(conditions, " color = $"+strconv.Itoa(len(args)+1))
-		args = append(args, req.Color)
+		args = append(args, req.Type)
 	}
-	if len(req.ImgUrl) > 0 {
+	if req.ImgUrl > "" && req.ImgUrl != "string" {
 		conditions = append(conditions, " img_url = $"+strconv.Itoa(len(args)+1))
 		args = append(args, req.ImgUrl)
 	}
 	if req.Price > 0 {
 		conditions = append(conditions, " price = $"+strconv.Itoa(len(args)+1))
 		args = append(args, req.Price)
+	}
+	if req.Count > 0 {
+		conditions = append(conditions, " count = $"+strconv.Itoa(len(args)+1))
+		args = append(args, req.Count)
 	}
 	if req.Description != "" && req.Description != "string" {
 		conditions = append(conditions, " description = $"+strconv.Itoa(len(args)+1))
@@ -223,9 +233,9 @@ func (r *ShoesRepo) Update(ctx context.Context, req *entity.ShoesUpdate) error {
 	return nil
 }
 
-func (r *ShoesRepo) Delete(ctx context.Context, req *entity.ById) error {
+func (r *ProductRepo) Delete(ctx context.Context, req *entity.ById) error {
 
-	_, err := r.pg.Pool.Exec(ctx, `UPDATE shoes SET deleted_at = EXTRACT(EPOCH FROM NOW()) WHERE id = $1`, req.Id)
+	_, err := r.pg.Pool.Exec(ctx, `UPDATE products SET deleted_at = EXTRACT(EPOCH FROM NOW()) WHERE id = $1`, req.Id)
 	if err != nil {
 		return err
 	}
