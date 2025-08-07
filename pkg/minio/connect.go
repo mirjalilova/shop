@@ -21,11 +21,11 @@ type MinIO struct {
 var bucketName = "shop"
 
 func MinIOConnect(cnf *config.Config) (*MinIO, error) {
-	endpoint := cnf.MINIO_ENDPOINT
+	// endpoint := cnf.MINIO_ENDPOINT
 	accessKeyID := cnf.MINIO_ACCESS_KEY
 	secretAccessKey := cnf.MINIO_SECRET_KEY
 
-	minioClient, err := minio.New(endpoint, &minio.Options{
+	minioClient, err := minio.New("shop_minio:9002", &minio.Options{
 		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
 		Secure: false,
 	})
