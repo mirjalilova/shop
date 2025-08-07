@@ -313,14 +313,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/shoes/create": {
+        "/product/create": {
             "post": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
-                "description": "Create a new Shoes with the provided details",
+                "description": "Create a new Product with the provided details",
                 "consumes": [
                     "application/json"
                 ],
@@ -328,17 +328,17 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Shoes"
+                    "Product"
                 ],
-                "summary": "Create a new Shoes",
+                "summary": "Create a new Product",
                 "parameters": [
                     {
-                        "description": "Shoes Details",
+                        "description": "Product Details",
                         "name": "Banner",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/entity.ShoesCreate"
+                            "$ref": "#/definitions/entity.ProductCreate"
                         }
                     }
                 ],
@@ -346,7 +346,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entity.ShoesCreate"
+                            "type": "string"
                         }
                     },
                     "400": {
@@ -364,14 +364,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/shoes/delete": {
+        "/product/delete": {
             "delete": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
-                "description": "Delete an Shoes by ID",
+                "description": "Delete an Product by ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -379,13 +379,13 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Shoes"
+                    "Product"
                 ],
-                "summary": "Delete an Shoes",
+                "summary": "Delete an Product",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Shoes ID",
+                        "description": "Product ID",
                         "name": "id",
                         "in": "query",
                         "required": true
@@ -393,7 +393,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Shoes deleted successfully",
+                        "description": "Product deleted successfully",
                         "schema": {
                             "type": "string"
                         }
@@ -413,14 +413,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/shoes/get": {
+        "/product/get": {
             "get": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
-                "description": "Get an Shoes by their ID",
+                "description": "Get an Product by their ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -428,13 +428,13 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Shoes"
+                    "Product"
                 ],
-                "summary": "Get Shoes by ID",
+                "summary": "Get Product by ID",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Shoes ID",
+                        "description": "Product ID",
                         "name": "id",
                         "in": "query",
                         "required": true
@@ -444,7 +444,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entity.ShoesRes"
+                            "$ref": "#/definitions/entity.ProductRes"
                         }
                     },
                     "400": {
@@ -462,14 +462,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/shoes/list": {
+        "/product/list": {
             "get": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
-                "description": "Get all Shoes with optional filtering",
+                "description": "Get all Product with optional filtering",
                 "consumes": [
                     "application/json"
                 ],
@@ -477,9 +477,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Shoes"
+                    "Product"
                 ],
-                "summary": "Get all Shoes",
+                "summary": "Get all Product",
                 "parameters": [
                     {
                         "type": "integer",
@@ -498,7 +498,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entity.ShoesGetAllRes"
+                            "$ref": "#/definitions/entity.ProductGetAllRes"
                         }
                     },
                     "400": {
@@ -516,14 +516,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/shoes/update": {
+        "/product/update": {
             "put": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
-                "description": "Update an Shoes's details",
+                "description": "Update an Product's details",
                 "consumes": [
                     "application/json"
                 ],
@@ -531,24 +531,24 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Shoes"
+                    "Product"
                 ],
-                "summary": "Update an Shoes",
+                "summary": "Update an Product",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Shoes ID",
+                        "description": "Product ID",
                         "name": "id",
                         "in": "query",
                         "required": true
                     },
                     {
-                        "description": "Shoes Update Details",
-                        "name": "Shoes",
+                        "description": "Product Update Details",
+                        "name": "Product",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/entity.ShoesCreate"
+                            "$ref": "#/definitions/entity.ProductCreate"
                         }
                     }
                 ],
@@ -960,26 +960,20 @@ const docTemplate = `{
                 }
             }
         },
-        "entity.ShoesCreate": {
+        "entity.ProductCreate": {
             "type": "object",
             "properties": {
                 "category_id": {
                     "type": "string"
                 },
-                "color": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
+                "count": {
+                    "type": "integer"
                 },
                 "description": {
                     "type": "string"
                 },
                 "img_url": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
+                    "type": "string"
                 },
                 "name": {
                     "type": "string"
@@ -988,38 +982,35 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "size": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                }
-            }
-        },
-        "entity.ShoesGetAllRes": {
-            "type": "object",
-            "properties": {
-                "count": {
                     "type": "integer"
                 },
-                "shoess": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/entity.ShoesRes"
-                    }
+                "type": {
+                    "type": "string"
                 }
             }
         },
-        "entity.ShoesRes": {
+        "entity.ProductGetAllRes": {
+            "type": "object",
+            "properties": {
+                "Products": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.ProductRes"
+                    }
+                },
+                "count": {
+                    "type": "integer"
+                }
+            }
+        },
+        "entity.ProductRes": {
             "type": "object",
             "properties": {
                 "category_id": {
                     "type": "string"
                 },
-                "color": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
+                "count": {
+                    "type": "integer"
                 },
                 "created_at": {
                     "type": "string"
@@ -1031,10 +1022,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "img_url": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
+                    "type": "string"
                 },
                 "name": {
                     "type": "string"
@@ -1043,10 +1031,10 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "size": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
+                    "type": "integer"
+                },
+                "type": {
+                    "type": "string"
                 }
             }
         },
