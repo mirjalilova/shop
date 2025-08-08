@@ -32,8 +32,8 @@ func TimeoutMiddleware(timeout time.Duration) gin.HandlerFunc {
 
 // NewRouter -.
 // Swagger spec:
-// @title       Shop News API
-// @description This is a sample server SHop News server.
+// @title       Ccenter News API
+// @description This is a sample server Ccenter News server.
 // @version     1.0
 // @BasePath    /
 // @securityDefinitions.apikey BearerAuth
@@ -91,12 +91,12 @@ func NewRouter(engine *gin.Engine, l *logger.Logger, config *config.Config, useC
 		category.DELETE("/delete", handlerV1.DeleteCategory)
 	}
 
-	shoes := engine.Group("/shoes")
+	product := engine.Group("/product")
 	{
-		shoes.GET("/get", handlerV1.GetByIdProduct)
-		shoes.GET("/list", handlerV1.GetAllProduct)
-		shoes.POST("/create", handlerV1.CreateProduct)
-		shoes.PUT("/update", handlerV1.UpdateProduct)
-		shoes.DELETE("/delete", handlerV1.DeleteProduct)
+		product.GET("/get", handlerV1.GetByIdProduct)
+		product.GET("/list", handlerV1.GetAllProduct)
+		product.POST("/create", handlerV1.CreateProduct)
+		product.PUT("/update", handlerV1.UpdateProduct)
+		product.DELETE("/delete", handlerV1.DeleteProduct)
 	}
 }
