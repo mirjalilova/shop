@@ -428,6 +428,14 @@ paths:
         in: query
         name: offset
         type: integer
+      - description: Search
+        in: query
+        name: search
+        type: string
+      - description: Category ID
+        in: query
+        name: category_id
+        type: string
       produces:
       - application/json
       responses:

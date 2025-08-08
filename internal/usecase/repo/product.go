@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -105,7 +106,7 @@ func (r *ProductRepo) GetById(ctx context.Context, req *entity.ById) (*entity.Pr
 	return &res, nil
 }
 
-func (r *ProductRepo) GetAll(ctx context.Context, req *entity.Filter) (*entity.ProductGetAllRes, error) {
+func (r *ProductRepo) GetAll(ctx context.Context, req *entity.ProductGetAllReq) (*entity.ProductGetAllRes, error) {
 
 	resp := &entity.ProductGetAllRes{}
 
@@ -130,13 +131,22 @@ func (r *ProductRepo) GetAll(ctx context.Context, req *entity.Filter) (*entity.P
 
 	var args []interface{}
 
-	if req.Limit == 0 {
-		query += " OFFSET $1"
-		args = append(args, req.Offset)
+	if req.CategoryId != "" {
+		query += fmt.Sprintf(" AND category_id = $%d", len(args)+1)
+		args = append(args, req.CategoryId)
+	}
+
+	if req.Search != "" {
+		query += fmt.Sprintf(" AND name ILIKE $%d", len(args)+1)
+		args = append(args, "%"+req.Search+"%")
+	}
+	if req.Filter.Limit == 0 {
+		query += fmt.Sprintf(" OFFSET $%d", len(args)+1)
+		args = append(args, req.Filter.Offset)
 	} else {
-		query += " LIMIT $1 OFFSET $2"
-		args = append(args, req.Limit)
-		args = append(args, req.Offset)
+		query += fmt.Sprintf(" LIMIT $%d OFFSET $%d", len(args)+1, len(args)+2)
+		args = append(args, req.Filter.Limit)
+		args = append(args, req.Filter.Offset)
 	}
 	rows, err := r.pg.Pool.Query(ctx, query, args...)
 	if err != nil {

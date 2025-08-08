@@ -119,6 +119,8 @@ func (h *Handler) UpdateProduct(c *gin.Context) {
 // @Produce  json
 // @Param limit query int false "Limit"
 // @Param offset query int false "Offset"
+// @Param search query string false "Search"
+// @Param category_id query string false "Category ID"
 // @Success 200 {object} entity.ProductGetAllRes
 // @Failure 400 {object} string
 // @Failure 500 {object} string
@@ -127,6 +129,8 @@ func (h *Handler) UpdateProduct(c *gin.Context) {
 func (h *Handler) GetAllProduct(c *gin.Context) {
 	limit := c.Query("limit")
 	offset := c.Query("offset")
+	search := c.Query("search")
+	category_id := c.Query("category_id")
 
 	limitValue, offsetValue, err := parsePaginationParams(c, limit, offset)
 	if err != nil {
@@ -135,9 +139,13 @@ func (h *Handler) GetAllProduct(c *gin.Context) {
 		return
 	}
 
-	req := &entity.Filter{
-		Limit:  limitValue,
-		Offset: offsetValue,
+	req := &entity.ProductGetAllReq{
+		Search:     search,
+		CategoryId: category_id,
+		Filter: entity.Filter{
+			Limit:  limitValue,
+			Offset: offsetValue,
+		},
 	}
 
 	res, err := h.UseCase.ProductRepo.GetAll(context.Background(), req)

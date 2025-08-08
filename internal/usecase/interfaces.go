@@ -24,7 +24,7 @@ type (
 	ProductRepoI interface {
 		Create(ctx context.Context, req *entity.ProductCreate) error
 		GetById(ctx context.Context, req *entity.ById) (*entity.ProductRes, error)
-		GetAll(ctx context.Context, req *entity.Filter) (*entity.ProductGetAllRes, error)
+		GetAll(ctx context.Context, req *entity.ProductGetAllReq) (*entity.ProductGetAllRes, error)
 		Update(ctx context.Context, req *entity.ProductUpdate) error
 		Delete(ctx context.Context, req *entity.ById) error
 	}
