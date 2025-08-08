@@ -27,10 +27,10 @@ CREATE TABLE IF NOT EXISTS category (
 CREATE TABLE IF NOT EXISTS products (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name TEXT NOT NULL,
-    size INT[] NOT NULL, 
+    size INT NOT NULL, 
     type product_type DEFAULT 'countable' NOT NULL, 
     price FLOAT NOT NULL,
-    img_url TEXT[] NOT NULL,
+    img_url TEXT NOT NULL,
     count INT NOT NULL,
     sales_count INT NOT NULL DEFAULT 0,
     category_id UUID NOT NULL REFERENCES category(id) ON DELETE CASCADE,

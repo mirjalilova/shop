@@ -37,7 +37,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 1111
-      POSTGRES_DB: shoes_shop
+      POSTGRES_DB: shop
     ports:
       - "5434:5432"
     volumes:
