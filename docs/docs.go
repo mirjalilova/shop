@@ -15,6 +15,213 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/bucket/create": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create a new Bucket Item with the provided details",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Bucket"
+                ],
+                "summary": "Create a new Bucket Item",
+                "parameters": [
+                    {
+                        "description": "Bucket Details",
+                        "name": "Bucket",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/entity.BucketItemCreate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/bucket/delete": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Delete an Bucket by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Bucket"
+                ],
+                "summary": "Delete an Bucket",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bucket Item ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Bucket deleted successfully",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/bucket/get": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get an Bucket by their ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Bucket"
+                ],
+                "summary": "Get Bucket by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entity.BucketRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/bucket/update": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update an Bucket's details",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Bucket"
+                ],
+                "summary": "Update an Bucket",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bucket ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "Bucket Update Details",
+                        "name": "Bucket",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/entity.BucketItemUpdateBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/category/create": {
             "post": {
                 "security": [
@@ -306,6 +513,57 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/order/create": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create a new Order with the provided details",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Order"
+                ],
+                "summary": "Create a new Order",
+                "parameters": [
+                    {
+                        "description": "Order Details",
+                        "name": "Order",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/entity.OrderCreate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "type": "string"
                         }
@@ -900,6 +1158,77 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "entity.BucketItemCreate": {
+            "type": "object",
+            "properties": {
+                "bucket_id": {
+                    "type": "string"
+                },
+                "count": {
+                    "type": "integer"
+                },
+                "product_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "entity.BucketItemRes": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "img_url": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "product_id": {
+                    "type": "string"
+                },
+                "product_name": {
+                    "type": "string"
+                },
+                "product_price": {
+                    "type": "number"
+                },
+                "product_size": {
+                    "type": "integer"
+                },
+                "product_type": {
+                    "type": "string"
+                }
+            }
+        },
+        "entity.BucketItemUpdateBody": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "price": {
+                    "type": "number"
+                }
+            }
+        },
+        "entity.BucketRes": {
+            "type": "object",
+            "properties": {
+                "Buskets": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.BucketItemRes"
+                    }
+                },
+                "total_price": {
+                    "type": "number"
+                }
+            }
+        },
         "entity.CategoryCreate": {
             "type": "object",
             "properties": {
@@ -950,6 +1279,19 @@ const docTemplate = `{
                 }
             }
         },
+        "entity.Location": {
+            "type": "object",
+            "properties": {
+                "latitude": {
+                    "type": "number",
+                    "example": 41.311081
+                },
+                "longitude": {
+                    "type": "number",
+                    "example": 69.240562
+                }
+            }
+        },
         "entity.LoginReq": {
             "type": "object",
             "properties": {
@@ -968,6 +1310,29 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "entity.OrderCreate": {
+            "type": "object",
+            "properties": {
+                "bucket_id": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "location": {
+                    "$ref": "#/definitions/entity.Location"
+                },
+                "payment_type": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "user_id": {
                     "type": "string"
                 }
             }

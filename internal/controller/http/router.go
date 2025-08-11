@@ -99,4 +99,17 @@ func NewRouter(engine *gin.Engine, l *logger.Logger, config *config.Config, useC
 		product.PUT("/update", handlerV1.UpdateProduct)
 		product.DELETE("/delete", handlerV1.DeleteProduct)
 	}
+
+	bucket := engine.Group("/bucket")
+	{
+		bucket.GET("/get", handlerV1.GetBucket)
+		bucket.POST("/create", handlerV1.BucketItemCreate)
+		bucket.PUT("/update", handlerV1.UpdateBucket)
+		bucket.DELETE("/delete", handlerV1.DeleteBucket)
+	}
+
+	order := engine.Group("/order")
+	{
+		order.POST("/create", handlerV1.CreateOrder)
+	}
 }

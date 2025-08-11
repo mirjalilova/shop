@@ -2,6 +2,11 @@ CREATE TYPE role AS ENUM('admin', 'user');
 
 CREATE TYPE product_type AS ENUM('kg', 'ml', 'countable');
 
+CREATE TYPE payment_type AS ENUM('cash', 'card');
+
+CREATE TYPE order_status AS ENUM ('pending', 'confirmed', 'shipped', 'delivered', 'cancelled', 'returned');
+
+CREATE EXTENSION postgis;
 
 
 CREATE TABLE IF NOT EXISTS users (
@@ -19,9 +24,11 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE debt_logs (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    amount BIGINT NOT NULL, -- + qo‘shildi, - kamaydi
+    amount BIGINT NOT NULL,
     reason TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    deleted_at BIGINT NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS category (
@@ -47,3 +54,38 @@ CREATE TABLE IF NOT EXISTS products (
     updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
     deleted_at BIGINT NOT NULL DEFAULT 0
 );
+
+CREATE TABLE IF NOT EXISTS buckets (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    total_price FLOAT NOT NULL DEFAULT 0,
+    status BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    deleted_at BIGINT NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS bucket_item (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    bucket_id UUID NOT NULL REFERENCES buckets(id) ON DELETE CASCADE,
+    product_id UUID NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+    count INT NOT NULL,
+    price FLOAT NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    deleted_at BIGINT NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS orders (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    bucket_id UUID NOT NULL REFERENCES buckets(id) ON DELETE CASCADE,
+    status order_status NOT NULL DEFAULT 'pending',
+    location GEOGRAPHY(POINT, 4326),
+    description TEXT NOT NULL,
+    payment_type payment_type DEFAULT 'cash' NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    deleted_at BIGINT NOT NULL DEFAULT 0
+);
+

@@ -23,3 +23,8 @@ type MultilingualField struct {
 type ById struct {
 	Id string `json:"id"`
 }
+
+type Location struct {
+	Latitude  float64 `json:"latitude" example:"41.311081"`
+	Longitude float64 `json:"longitude" example:"69.240562"`
+}

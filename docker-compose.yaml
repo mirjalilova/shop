@@ -32,7 +32,7 @@ services:
       - shop_ntwrk
   
   db:
-    image: postgres:latest
+    image: postgis/postgis:17-3.4
     container_name: db
     environment:
       POSTGRES_USER: postgres

@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -31,22 +32,48 @@ func NewUserRepo(pg *postgres.Postgres, config *config.Config, logger *logger.Lo
 }
 
 func (r *UserRepo) Create(ctx context.Context, req *entity.CreateUser) error {
+	tr, err := r.pg.Pool.Begin(ctx)
+	if err != nil {
+		return fmt.Errorf("error while begin transactions")
+	}
+
 	query := `
 		INSERT INTO users (
 			name,
 			password,
 			phone_number
-		) VALUES($1, $2, $3)`
+		) VALUES($1, $2, $3)
+		 RETURNING id`
 
-	_, err := r.pg.Pool.Exec(ctx, query,
+	var id string
+	err = tr.QueryRow(ctx, query,
 		req.Name,
 		req.Password,
 		req.PhoneNumber,
-	)
+	).Scan(&id)
 	if err != nil {
+		tr.Rollback(ctx)
 		return err
 	}
 
+	query = `
+		INSERT INTO buckets (
+			user_id
+		) VALUES($1)`
+
+	_, err = tr.Exec(ctx, query,
+		id,
+	)
+	if err != nil {
+		tr.Rollback(ctx)
+		return err
+	}
+
+	err = tr.Commit(ctx)
+	if err != nil {
+		tr.Rollback(ctx)
+		return err
+	}
 	return nil
 }
 

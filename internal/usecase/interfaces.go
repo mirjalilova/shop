@@ -38,4 +38,17 @@ type (
 		Update(ctx context.Context, req *entity.UpdateUser) error
 		Delete(ctx context.Context, req *entity.ById) error
 	}
+
+	// BucketRepo -.
+	BucketRepoI interface {
+		Create(ctx context.Context, req *entity.BucketItemCreate) error
+		GetBucket(ctx context.Context, user_id string) (*entity.BucketRes, error)
+		Update(ctx context.Context, req *entity.BucketItemUpdate) error
+		Delete(ctx context.Context, id string) error
+	}
+
+	// OrderRepo -.
+	OrderRepoI interface {
+		Create(ctx context.Context, req *entity.OrderCreate) error
+	}
 )
