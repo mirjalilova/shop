@@ -13,6 +13,7 @@ type UseCase struct {
 	UserRepo     UserRepoI
 	BucketRepo   BucketRepoI
 	OrderRepo    OrderRepoI
+	DebtLogsRepo DebtLogsRepoI
 }
 
 func New(pg *postgres.Postgres, config *config.Config, logger *logger.Logger) *UseCase {
@@ -22,5 +23,6 @@ func New(pg *postgres.Postgres, config *config.Config, logger *logger.Logger) *U
 		UserRepo:     repo.NewUserRepo(pg, config, logger),
 		BucketRepo:   repo.NewBucketRepo(pg, config, logger),
 		OrderRepo:    repo.NewOrderRepo(pg, config, logger),
+		DebtLogsRepo: repo.NewDebtLogsRepo(pg, config, logger),
 	}
 }

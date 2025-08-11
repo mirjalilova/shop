@@ -51,4 +51,11 @@ type (
 	OrderRepoI interface {
 		Create(ctx context.Context, req *entity.OrderCreate) error
 	}
+
+	// DebtLogsRepo -.
+	DebtLogsRepoI interface {
+		Create(ctx context.Context, req *entity.DebtLogCreate) error
+		GetDebtLogs(ctx context.Context, user_id string, status string) (*entity.DebtLogGetAllRes, error)
+		Update(ctx context.Context, req entity.DebtLogUpdate) error
+	}
 )

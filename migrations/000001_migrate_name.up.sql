@@ -6,6 +6,8 @@ CREATE TYPE payment_type AS ENUM('cash', 'card');
 
 CREATE TYPE order_status AS ENUM ('pending', 'confirmed', 'shipped', 'delivered', 'cancelled', 'returned');
 
+CREATE TYPE debt_type AS ENUM ('took', 'gave');
+
 CREATE EXTENSION postgis;
 
 
@@ -26,6 +28,9 @@ CREATE TABLE debt_logs (
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     amount BIGINT NOT NULL,
     reason TEXT NOT NULL,
+    debt_type debt_type NOT NULL DEFAULT 'took',
+    time_taken TIMESTAMP NOT NULL DEFAULT NOW(),
+    given_time TIMESTAMP,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
     deleted_at BIGINT NOT NULL DEFAULT 0

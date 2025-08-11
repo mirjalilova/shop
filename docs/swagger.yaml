@@ -78,6 +78,52 @@ definitions:
       phone_number:
         type: string
     type: object
+  entity.DebtLogCreate:
+    properties:
+      amount:
+        type: integer
+      reason:
+        type: string
+      user_id:
+        type: string
+    type: object
+  entity.DebtLogGetAllRes:
+    properties:
+      count:
+        type: integer
+      debt_logs:
+        items:
+          $ref: '#/definitions/entity.DebtLogRes'
+        type: array
+    type: object
+  entity.DebtLogRes:
+    properties:
+      amount:
+        type: integer
+      given_time:
+        type: string
+      id:
+        type: string
+      reason:
+        type: string
+      status:
+        type: string
+      taken_time:
+        type: string
+      user_id:
+        type: string
+      user_name:
+        type: string
+    type: object
+  entity.DebtLogUpdateBody:
+    properties:
+      amount:
+        type: integer
+      reason:
+        type: string
+      status:
+        type: string
+    type: object
   entity.Location:
     properties:
       latitude:
@@ -498,6 +544,111 @@ paths:
       summary: Update an Category
       tags:
       - Category
+  /debt/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a new Debt Item with the provided details
+      parameters:
+      - description: Debt Details
+        in: body
+        name: Debt
+        required: true
+        schema:
+          $ref: '#/definitions/entity.DebtLogCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Create a new Debt Item
+      tags:
+      - Debt
+  /debt/get:
+    get:
+      consumes:
+      - application/json
+      description: Get an Debt by their ID
+      parameters:
+      - description: User ID
+        in: query
+        name: id
+        required: true
+        type: string
+      - description: Status
+        in: query
+        name: status
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.DebtLogGetAllRes'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get Debt by ID
+      tags:
+      - Debt
+  /debt/update:
+    put:
+      consumes:
+      - application/json
+      description: Update an Debt's details
+      parameters:
+      - description: Debt ID
+        in: query
+        name: id
+        required: true
+        type: string
+      - description: Debt Update Details
+        in: body
+        name: Debt
+        required: true
+        schema:
+          $ref: '#/definitions/entity.DebtLogUpdateBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Update an Debt
+      tags:
+      - Debt
   /img-upload:
     post:
       consumes:
