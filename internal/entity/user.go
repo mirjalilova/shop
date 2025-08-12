@@ -7,11 +7,11 @@ type CreateUser struct {
 }
 
 type UserInfo struct {
-	ID          string  `json:"id"`
-	Name        string  `json:"name"`
-	PhoneNumber string  `json:"phone_number"`
-	Debt        float32 `json:"debt"`
-	CreatedAt   string  `json:"created_at"`
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	PhoneNumber string `json:"phone_number"`
+	Debt        int    `json:"debt"`
+	CreatedAt   string `json:"created_at"`
 }
 
 type UpdateUser struct {
