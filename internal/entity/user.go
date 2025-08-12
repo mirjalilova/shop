@@ -36,6 +36,6 @@ type LoginReq struct {
 }
 
 type LoginRes struct {
-	Message string `json:"message"`
-	Token   string `json:"token"`
+	UserInfo UserInfo `json:"user_info"`
+	Token    string   `json:"token"`
 }

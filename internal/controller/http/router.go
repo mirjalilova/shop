@@ -112,4 +112,11 @@ func NewRouter(engine *gin.Engine, l *logger.Logger, config *config.Config, useC
 	{
 		order.POST("/create", handlerV1.CreateOrder)
 	}
+
+	debt := engine.Group("/debt")
+	{
+		debt.GET("/get", handlerV1.GetDebts)
+		debt.POST("/create", handlerV1.DebtLogCreate)
+		debt.PUT("/update", handlerV1.UpdateDebt)
+	}
 }

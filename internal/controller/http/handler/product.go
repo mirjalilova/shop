@@ -15,7 +15,7 @@ import (
 // @Tags Product
 // @Accept  json
 // @Produce  json
-// @Param Banner body entity.ProductCreate true "Product Details"
+// @Param Product body entity.ProductCreate true "Product Details"
 // @Success 200 {object} string
 // @Failure 400 {object}  string
 // @Failure 500 {object} string

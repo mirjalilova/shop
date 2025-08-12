@@ -1,7 +1,7 @@
 package entity
 
 type BucketItemCreate struct {
-	BucketID  string `json:"bucket_id"`
+	UserID  string `json:"user_id"`
 	ProductID string `json:"product_id"`
 	Count     int    `json:"count"`
 }

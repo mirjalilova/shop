@@ -25,7 +25,17 @@ func NewBucketRepo(pg *postgres.Postgres, config *config.Config, logger *logger.
 }
 
 func (r *BucketRepo) Create(ctx context.Context, req *entity.BucketItemCreate) error {
-	query := `
+
+	var bucket_id string
+
+	query := "SELECT id from buckets where user_id = $1 AND deleted_at = 0"
+
+	err := r.pg.Pool.QueryRow(ctx, query, req.UserID).Scan(&bucket_id)
+	if err != nil {
+		return err
+	}
+
+	query = `
 		INSERT INTO bucket_item (bucket_id, product_id, count, price)
 		SELECT
 			$1 AS bucket_id,
@@ -35,8 +45,8 @@ func (r *BucketRepo) Create(ctx context.Context, req *entity.BucketItemCreate) e
 		FROM products
 		WHERE id = $2`
 
-	_, err := r.pg.Pool.Exec(ctx, query,
-		req.BucketID,
+	_, err = r.pg.Pool.Exec(ctx, query,
+		bucket_id,
 		req.ProductID,
 		req.Count,
 	)

@@ -2,11 +2,11 @@ basePath: /
 definitions:
   entity.BucketItemCreate:
     properties:
-      bucket_id:
-        type: string
       count:
         type: integer
       product_id:
+        type: string
+      user_id:
         type: string
     type: object
   entity.BucketItemRes:
@@ -142,10 +142,10 @@ definitions:
     type: object
   entity.LoginRes:
     properties:
-      message:
-        type: string
       token:
         type: string
+      user_info:
+        $ref: '#/definitions/entity.UserInfo'
     type: object
   entity.OrderCreate:
     properties:
@@ -712,7 +712,7 @@ paths:
       parameters:
       - description: Product Details
         in: body
-        name: Banner
+        name: Product
         required: true
         schema:
           $ref: '#/definitions/entity.ProductCreate'

@@ -757,7 +757,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "Product Details",
-                        "name": "Banner",
+                        "name": "Product",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -1326,13 +1326,13 @@ const docTemplate = `{
         "entity.BucketItemCreate": {
             "type": "object",
             "properties": {
-                "bucket_id": {
-                    "type": "string"
-                },
                 "count": {
                     "type": "integer"
                 },
                 "product_id": {
+                    "type": "string"
+                },
+                "user_id": {
                     "type": "string"
                 }
             }
@@ -1542,11 +1542,11 @@ const docTemplate = `{
         "entity.LoginRes": {
             "type": "object",
             "properties": {
-                "message": {
-                    "type": "string"
-                },
                 "token": {
                     "type": "string"
+                },
+                "user_info": {
+                    "$ref": "#/definitions/entity.UserInfo"
                 }
             }
         },

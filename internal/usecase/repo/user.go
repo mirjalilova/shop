@@ -82,7 +82,10 @@ func (r *UserRepo) Login(ctx context.Context, req *entity.LoginReq) (*entity.Log
 		SELECT
 			password,
 			id,
-			role
+			role,
+			phone_number,
+			debt,
+			name
 		FROM
 			users
 		WHERE
@@ -90,11 +93,12 @@ func (r *UserRepo) Login(ctx context.Context, req *entity.LoginReq) (*entity.Log
 		AND
 			deleted_at = 0
 	`
+
+	user := entity.UserInfo{}
 	row := r.pg.Pool.QueryRow(ctx, query, req.Login)
 	var password string
-	var id string
 	var role string
-	err := row.Scan(&password, &id, &role)
+	err := row.Scan(&password, &user.ID, &role, &user.PhoneNumber, &user.Debt, &user.Name)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, errors.New("user not found")
@@ -106,10 +110,10 @@ func (r *UserRepo) Login(ctx context.Context, req *entity.LoginReq) (*entity.Log
 		return nil, errors.New("invalid password")
 	}
 
-	token := token.GenerateJWTToken(id, role)
+	token := token.GenerateJWTToken(user.ID, role)
 
 	return &entity.LoginRes{Token: token.AccessToken,
-		Message: "success"}, nil
+		UserInfo: user}, nil
 }
 
 func (r *UserRepo) GetById(ctx context.Context, req *entity.ById) (*entity.UserInfo, error) {

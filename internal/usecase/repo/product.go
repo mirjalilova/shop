@@ -205,7 +205,7 @@ func (r *ProductRepo) Update(ctx context.Context, req *entity.ProductUpdate) err
 		args = append(args, req.Size)
 	}
 	if req.Type > "" && req.Type != "string" {
-		conditions = append(conditions, " color = $"+strconv.Itoa(len(args)+1))
+		conditions = append(conditions, " type = $"+strconv.Itoa(len(args)+1))
 		args = append(args, req.Type)
 	}
 	if req.ImgUrl > "" && req.ImgUrl != "string" {
