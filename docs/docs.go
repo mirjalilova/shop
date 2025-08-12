@@ -1389,6 +1389,9 @@ const docTemplate = `{
                         "$ref": "#/definitions/entity.BucketItemRes"
                     }
                 },
+                "bucket_id": {
+                    "type": "string"
+                },
                 "total_price": {
                     "type": "number"
                 }

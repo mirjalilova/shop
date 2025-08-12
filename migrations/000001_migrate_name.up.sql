@@ -1,6 +1,6 @@
 CREATE TYPE role AS ENUM('admin', 'user');
 
-CREATE TYPE product_type AS ENUM('kg', 'ml', 'countable');
+CREATE TYPE product_type AS ENUM('g', 'ml', 'countable');
 
 CREATE TYPE payment_type AS ENUM('cash', 'card');
 

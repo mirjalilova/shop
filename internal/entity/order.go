@@ -22,6 +22,10 @@ type OrderItemRes struct {
 }
 
 type OrderRes struct {
-	Buskets    []OrderItemRes `json:"Buskets"`
-	TotalPrice float32        `json:"total_price"`
+	Buskets     []OrderItemRes `json:"Buskets"`
+	TotalPrice  float32        `json:"total_price"`
+	Status      string         `json:"status"`
+	Location    Location       `json:"location"`
+	Description string         `json:"description"`
+	PaymentType string         `json:"payment_type"`
 }

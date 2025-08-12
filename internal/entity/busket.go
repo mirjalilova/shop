@@ -1,7 +1,7 @@
 package entity
 
 type BucketItemCreate struct {
-	UserID  string `json:"user_id"`
+	UserID    string `json:"user_id"`
 	ProductID string `json:"product_id"`
 	Count     int    `json:"count"`
 }
@@ -32,4 +32,5 @@ type BucketItemRes struct {
 type BucketRes struct {
 	Buskets    []BucketItemRes `json:"Buskets"`
 	TotalPrice float32         `json:"total_price"`
+	BucketID   string          `json:"bucket_id"`
 }

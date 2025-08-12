@@ -62,6 +62,7 @@ func (r *BucketRepo) GetBucket(ctx context.Context, user_id string) (*entity.Buc
 
 	query := `
 		SELECT
+			b.id,
 			bi.id,
 			bi.product_id,
 			p.name,
@@ -93,7 +94,9 @@ func (r *BucketRepo) GetBucket(ctx context.Context, user_id string) (*entity.Buc
 	for rows.Next() {
 		item := &entity.BucketItemRes{}
 		var total_price float32
+		var bucket_id string
 		err = rows.Scan(
+			&bucket_id,
 			&item.Id,
 			&item.ProductID,
 			&item.ProductName,
@@ -110,6 +113,7 @@ func (r *BucketRepo) GetBucket(ctx context.Context, user_id string) (*entity.Buc
 		}
 		items = append(items, *item)
 		res.TotalPrice = total_price
+		res.BucketID = bucket_id
 	}
 
 	res.Buskets = items

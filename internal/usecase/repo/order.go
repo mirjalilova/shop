@@ -30,6 +30,8 @@ func (r *OrderRepo) Create(ctx context.Context, req *entity.OrderCreate) error {
 		return fmt.Errorf("error while begin transactions")
 	}
 
+	loc := fmt.Sprintf("POINT(%f %f)", req.Location.Longitude, req.Location.Latitude)
+
 	query := `
 		INSERT INTO orders (
 			user_id,
@@ -45,7 +47,7 @@ func (r *OrderRepo) Create(ctx context.Context, req *entity.OrderCreate) error {
 		req.UserID,
 		req.BucketID,
 		req.Status,
-		req.Location,
+		loc,
 		req.Description,
 		req.PaymentType,
 	)
