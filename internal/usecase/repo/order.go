@@ -59,7 +59,7 @@ func (r *OrderRepo) Create(ctx context.Context, req *entity.OrderCreate) error {
 	query = `
 		SELECT
 			bi.product_id,
-			bi.count,
+			bi.count
 		FROM
 			buckets b 
 		JOIN 
