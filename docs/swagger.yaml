@@ -164,6 +164,46 @@ definitions:
       user_id:
         type: string
     type: object
+  entity.OrderItemRes:
+    properties:
+      count:
+        type: integer
+      id:
+        type: string
+      img_url:
+        type: string
+      price:
+        type: number
+      product_id:
+        type: string
+      product_name:
+        type: string
+      product_price:
+        type: number
+      product_size:
+        type: integer
+      product_type:
+        type: string
+    type: object
+  entity.OrderRes:
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      location:
+        $ref: '#/definitions/entity.Location'
+      orders:
+        items:
+          $ref: '#/definitions/entity.OrderItemRes'
+        type: array
+      payment_type:
+        type: string
+      status:
+        type: string
+      total_price:
+        type: number
+    type: object
   entity.ProductCreate:
     properties:
       category_id:
@@ -317,7 +357,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get an Bucket by their ID
+      description: Get all Bucket
       parameters:
       - description: User ID
         in: query
@@ -341,7 +381,7 @@ paths:
             type: string
       security:
       - BearerAuth: []
-      summary: Get Bucket by ID
+      summary: Get Bucket
       tags:
       - Bucket
   /bucket/update:
@@ -704,6 +744,42 @@ paths:
       security:
       - BearerAuth: []
       summary: Create a new Order
+      tags:
+      - Order
+  /order/get:
+    get:
+      consumes:
+      - application/json
+      description: Get all Orders
+      parameters:
+      - description: User ID
+        in: query
+        name: id
+        required: true
+        type: string
+      - description: Status
+        in: query
+        name: status
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.OrderRes'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get Orders
       tags:
       - Order
   /product/create:

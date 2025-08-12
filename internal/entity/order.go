@@ -22,7 +22,8 @@ type OrderItemRes struct {
 }
 
 type OrderRes struct {
-	Buskets     []OrderItemRes `json:"Buskets"`
+	ID          string         `json:"id"`
+	Orders      []OrderItemRes `json:"orders"`
 	TotalPrice  float32        `json:"total_price"`
 	Status      string         `json:"status"`
 	Location    Location       `json:"location"`

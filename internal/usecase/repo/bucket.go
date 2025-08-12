@@ -28,7 +28,7 @@ func (r *BucketRepo) Create(ctx context.Context, req *entity.BucketItemCreate) e
 
 	var bucket_id string
 
-	query := "SELECT id from buckets where user_id = $1 AND deleted_at = 0"
+	query := "SELECT id from buckets where user_id = $1 AND deleted_at = 0 AND status = false LIMIT 1"
 
 	err := r.pg.Pool.QueryRow(ctx, query, req.UserID).Scan(&bucket_id)
 	if err != nil {

@@ -43,13 +43,14 @@ CREATE TABLE IF NOT EXISTS category (
     updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
     deleted_at BIGINT NOT NULL DEFAULT 0
 );
-
+31,MOY UNIVERSAL 20/50,900GR,14,50000,15000,30%,0,1311,0,2.622%
 CREATE TABLE IF NOT EXISTS products (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name TEXT NOT NULL,
     size INT NOT NULL, 
     type product_type DEFAULT 'countable' NOT NULL, 
     price FLOAT NOT NULL,
+    selling_price FLOAT,
     img_url TEXT NOT NULL,
     count INT NOT NULL,
     sales_count INT NOT NULL DEFAULT 0,

@@ -40,3 +40,30 @@ func (h *Handler) CreateOrder(c *gin.Context) {
 	slog.Info("New Order created successfully")
 	c.JSON(200, gin.H{"Massage": "New Order created successfully"})
 }
+
+// GetOrders godoc
+// @Summary Get Orders
+// @Description Get all Orders
+// @Tags Order
+// @Accept  json
+// @Produce  json
+// @Param id query string true "User ID"
+// @Param status query string true "Status"
+// @Success 200 {object} entity.OrderRes
+// @Failure 400 {object} string
+// @Failure 500 {object} string
+// @Security BearerAuth
+// @Router /order/get [get]
+func (h *Handler) GetOrders(c *gin.Context) {
+	user_id := c.Query("id")
+
+	res, err := h.UseCase.OrderRepo.GetOrders(context.Background(), user_id, c.Query("status"))
+	if err != nil {
+		c.JSON(500, gin.H{"Error getting Order by ID: ": err})
+		slog.Error("Error getting Order by ID: ", "err", err)
+		return
+	}
+
+	slog.Info("Order retrieved successfully")
+	c.JSON(200, res)
+}

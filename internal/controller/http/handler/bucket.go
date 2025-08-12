@@ -42,8 +42,8 @@ func (h *Handler) BucketItemCreate(c *gin.Context) {
 }
 
 // GetBucket godoc
-// @Summary Get Bucket by ID
-// @Description Get an Bucket by their ID
+// @Summary Get Bucket 
+// @Description Get all Bucket 
 // @Tags Bucket
 // @Accept  json
 // @Produce  json
