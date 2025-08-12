@@ -47,8 +47,8 @@ func (h *Handler) CreateOrder(c *gin.Context) {
 // @Tags Order
 // @Accept  json
 // @Produce  json
-// @Param id query string true "User ID"
-// @Param status query string true "Status"
+// @Param id query string false "User ID"
+// @Param status query string false "Status"
 // @Success 200 {object} entity.OrderRes
 // @Failure 400 {object} string
 // @Failure 500 {object} string
