@@ -1669,7 +1669,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "debt": {
-                    "type": "number"
+                    "type": "integer"
                 },
                 "id": {
                     "type": "string"
