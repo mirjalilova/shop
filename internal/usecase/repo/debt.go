@@ -45,7 +45,7 @@ func (r *DebtLogsRepo) Create(ctx context.Context, req *entity.DebtLogCreate) er
 func (r *DebtLogsRepo) GetDebtLogs(ctx context.Context, user_id string, status string) (*entity.DebtLogGetAllRes, error) {
 	var res entity.DebtLogGetAllRes
 	query := `SELECT 
-				COUNT(id) OVER () AS total_count,
+				COUNT(d.id) OVER () AS total_count,
 				d.id,
 				d.user_id,
 				u.name,

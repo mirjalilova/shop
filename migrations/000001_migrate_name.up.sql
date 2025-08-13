@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name TEXT NOT NULL,
     password TEXT,
-    phone_number VARCHAR(20) NOT NULL,
+    phone_number VARCHAR(13) UNIQUE NOT NULL,
     debt BIGINT NOT NULL DEFAULT 0,
     role role NOT NULL DEFAULT 'user',
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
@@ -95,3 +95,36 @@ CREATE TABLE IF NOT EXISTS orders (
     deleted_at BIGINT NOT NULL DEFAULT 0
 );
 
+
+
+
+
+
+
+-- qarzni hisoblash
+CREATE OR REPLACE FUNCTION recalc_user_debt()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE users u
+    SET debt = COALESCE(took_sum, 0) - COALESCE(gave_sum, 0)
+    FROM (
+        SELECT
+            user_id,
+            SUM(CASE WHEN debt_type = 'took' AND deleted_at = 0 THEN amount ELSE 0 END) AS took_sum,
+            SUM(CASE WHEN debt_type = 'gave' AND deleted_at = 0 THEN amount ELSE 0 END) AS gave_sum
+        FROM debt_logs
+        WHERE deleted_at = 0
+        GROUP BY user_id
+    ) d
+    WHERE u.id = d.user_id
+      AND u.id = COALESCE(NEW.user_id, OLD.user_id);
+
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS debt_logs_after_insert ON debt_logs;
+CREATE TRIGGER debt_logs_after_insert
+AFTER INSERT OR UPDATE OR DELETE ON debt_logs
+FOR EACH ROW
+EXECUTE FUNCTION recalc_user_debt();
