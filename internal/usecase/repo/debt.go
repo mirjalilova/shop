@@ -75,7 +75,7 @@ func (r *DebtLogsRepo) GetDebtLogs(ctx context.Context, user_id string, status s
 	var debtLogs []entity.DebtLogRes
 	for rows.Next() {
 		var debtLog entity.DebtLogRes
-		var timeTaken, givenTime time.Time
+		var timeTaken, givenTime *time.Time
 		var count int
 
 		if err := rows.Scan(
@@ -93,7 +93,9 @@ func (r *DebtLogsRepo) GetDebtLogs(ctx context.Context, user_id string, status s
 		}
 
 		debtLog.TakenTime = timeTaken.Format(time.RFC3339)
-		debtLog.GivenTime = givenTime.Format(time.RFC3339)
+		formatted := givenTime.Format(time.RFC3339)
+		debtLog.GivenTime = &formatted
+
 		res.Count = count
 		debtLogs = append(debtLogs, debtLog)
 	}
