@@ -93,8 +93,10 @@ func (r *DebtLogsRepo) GetDebtLogs(ctx context.Context, user_id string, status s
 		}
 
 		debtLog.TakenTime = timeTaken.Format(time.RFC3339)
-		formatted := givenTime.Format(time.RFC3339)
-		debtLog.GivenTime = &formatted
+		if givenTime != nil {
+			formatted := givenTime.Format(time.RFC3339)
+			debtLog.GivenTime = &formatted
+		}
 
 		res.Count = count
 		debtLogs = append(debtLogs, debtLog)
