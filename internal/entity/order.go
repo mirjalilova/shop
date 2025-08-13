@@ -3,7 +3,6 @@ package entity
 type OrderCreate struct {
 	UserID      string   `json:"user_id"`
 	BucketID    string   `json:"bucket_id"`
-	Status      string   `json:"status"`
 	Location    Location `json:"location"`
 	Description string   `json:"description"`
 	PaymentType string   `json:"payment_type"`

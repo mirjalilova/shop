@@ -159,8 +159,6 @@ definitions:
         $ref: '#/definitions/entity.Location'
       payment_type:
         type: string
-      status:
-        type: string
       user_id:
         type: string
     type: object

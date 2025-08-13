@@ -36,24 +36,22 @@ func (r *OrderRepo) Create(ctx context.Context, req *entity.OrderCreate) error {
 		INSERT INTO orders (
 			user_id,
 			bucket_id,
-			status,
 			location,
 			description,
 			payment_type
-		) VALUES($1, $2, $3, $4, $5, $6)
+		) VALUES($1, $2, $3, $4, $5)
 		`
 
 	_, err = tr.Exec(ctx, query,
 		req.UserID,
 		req.BucketID,
-		req.Status,
 		loc,
 		req.Description,
 		req.PaymentType,
 	)
 	if err != nil {
 		tr.Rollback(ctx)
-		return err
+		return fmt.Errorf("error while creating order: %w", err)
 	}
 
 	query = `
@@ -72,7 +70,7 @@ func (r *OrderRepo) Create(ctx context.Context, req *entity.OrderCreate) error {
 	rows, err := r.pg.Pool.Query(ctx, query, req.BucketID)
 	if err != nil {
 		tr.Rollback(ctx)
-		return err
+		return fmt.Errorf("error while querying bucket items: %w", err)
 	}
 	defer rows.Close()
 
@@ -93,22 +91,22 @@ func (r *OrderRepo) Create(ctx context.Context, req *entity.OrderCreate) error {
 		_, err = tr.Exec(ctx, query, product_id, count)
 		if err != nil {
 			tr.Rollback(ctx)
-			return err
+			return fmt.Errorf("error while updating product count: %w", err)
 		}
 	}
 
 	query = `
-		UPDATE buckets SET status = true WHERE id = $2`
+		UPDATE buckets SET status = true WHERE id = $1`
 	_, err = tr.Exec(ctx, query, req.BucketID)
 	if err != nil {
 		tr.Rollback(ctx)
-		return err
+		return fmt.Errorf("error while updating bucket status: %w", err)
 	}
 
 	err = tr.Commit(ctx)
 	if err != nil {
-		tr.Commit(ctx)
-		return err
+		tr.Rollback(ctx)
+		return fmt.Errorf("error while committing transaction: %w", err)
 	}
 	return nil
 }

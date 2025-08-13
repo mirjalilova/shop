@@ -1622,9 +1622,6 @@ const docTemplate = `{
                 "payment_type": {
                     "type": "string"
                 },
-                "status": {
-                    "type": "string"
-                },
                 "user_id": {
                     "type": "string"
                 }
