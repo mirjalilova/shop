@@ -146,7 +146,7 @@ func (h *Handler) UpdateUser(c *gin.Context) {
 // @Produce  json
 // @Param limit query int false "Limit"
 // @Param offset query int false "Offset"
-// @Param name query int false "Search by name"
+// @Param name query string false "Search by name"
 // @Success 200 {object} entity.UserList
 // @Failure 400 {object} string
 // @Failure 500 {object} string

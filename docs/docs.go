@@ -1242,7 +1242,7 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "Search by name",
                         "name": "name",
                         "in": "query"

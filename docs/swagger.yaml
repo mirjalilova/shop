@@ -1060,7 +1060,7 @@ paths:
       - description: Search by name
         in: query
         name: name
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
