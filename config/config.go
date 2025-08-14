@@ -9,13 +9,14 @@ import (
 type (
 	// Config -.
 	Config struct {
-		App    `yaml:"app"`
-		HTTP   `yaml:"http"`
-		Log    `yaml:"logger"`
-		PG     `yaml:"postgres"`
-		Minio  `yaml:"minio"`
-		ApiKey `yaml:"api_key"`
-		JWT    `yaml:"jwt"`
+		App      `yaml:"app"`
+		HTTP     `yaml:"http"`
+		Log      `yaml:"logger"`
+		PG       `yaml:"postgres"`
+		Minio    `yaml:"minio"`
+		ApiKey   `yaml:"api_key"`
+		JWT      `yaml:"jwt"`
+		Telegram `yaml:"telegram"`
 	}
 
 	// App -.
@@ -58,6 +59,12 @@ type (
 		Secret string `env-required:"true" yaml:"secret" env:"JWT_SECRET"`
 	}
 
+	// Telegram -.
+	Telegram struct {
+		Token   string `env-required:"true" yaml:"token" env:"TELEGRAM_TOKEN"`
+		ChatID  string `env-required:"true" yaml:"chat_id" env:"TELEGRAM_CHAT_ID"`
+		BaseURL string `env-required:"true" yaml:"base_url" env:"TELEGRAM_BASE_URL"`
+	}
 )
 
 // NewConfig returns app config.
