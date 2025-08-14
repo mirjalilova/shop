@@ -114,8 +114,8 @@ func (r *OrderRepo) GetOrders(ctx context.Context, status string, user_id string
 		SELECT
 			id,
 			status,
-			ST_Y(location) AS latitude,
-			ST_X(location) AS longitude,
+			ST_Y(o.location::geometry) AS latitude,
+			ST_X(o.location::geometry) AS longitude,
 			description,
 			payment_type,
 			bucket_id
@@ -220,8 +220,8 @@ func (r *OrderRepo) sendOrderToTelegram(ctx context.Context, orderID string) {
 			o.description, 
 			o.payment_type, 
 			o.created_at,
-		    ST_Y(o.location) AS latitude,
-			ST_X(o.location) AS longitude,
+		    ST_Y(o.location::geometry) AS latitude,
+			ST_X(o.location::geometry) AS longitude,
 			b.total_price
 		FROM orders o
 		JOIN users u ON o.user_id = u.id
