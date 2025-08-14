@@ -8,6 +8,7 @@ import (
 	"shop/pkg/logger"
 	"shop/pkg/postgres"
 	"shop/pkg/telegram"
+	"time"
 )
 
 type OrderRepo struct {
@@ -232,7 +233,7 @@ func (r *OrderRepo) sendOrderToTelegram(ctx context.Context, orderID string) {
 
 	var (
 		id, name, phone, description, paymentType string
-		createdAt                                 string
+		createdAt                                 time.Time
 		totalPrice                                int
 	)
 	lat := entity.Location{}
@@ -273,7 +274,7 @@ func (r *OrderRepo) sendOrderToTelegram(ctx context.Context, orderID string) {
 
 	message := fmt.Sprintf(
 		"<b>🆕 Yangi Buyurtma</b>\n\n🆔 ID: %s\n👤 Mijoz: %s\n📞 Telefon: %s\n📍 Joylashuv: %.6f, %.6f\n💳 To‘lov turi: %s\n🛒 Buyurtmalar:\n%s\n💰 Jami: %.2f\n🕒 Sana: %s",
-		id, name, phone, lat.Latitude, lat.Longitude, paymentType, itemsText, totalPrice, createdAt,
+		id, name, phone, lat.Latitude, lat.Longitude, paymentType, itemsText, totalPrice, createdAt.Format("2006-01-02 15:04:05"),
 	)
 
 	tg := telegram.NewClient(r.config.Telegram.Token, r.config.Telegram.ChatID)
