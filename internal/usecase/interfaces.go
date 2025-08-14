@@ -34,7 +34,7 @@ type (
 		Login(ctx context.Context, req *entity.LoginReq) (*entity.LoginRes, error)
 		Create(ctx context.Context, req *entity.CreateUser) error
 		GetById(ctx context.Context, req *entity.ById) (*entity.UserInfo, error)
-		GetAll(ctx context.Context, req *entity.Filter) (*entity.UserList, error)
+		GetAll(ctx context.Context, req *entity.Filter, name string) (*entity.UserList, error)
 		Update(ctx context.Context, req *entity.UpdateUser) error
 		Delete(ctx context.Context, req *entity.ById) error
 	}

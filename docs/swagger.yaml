@@ -1057,6 +1057,10 @@ paths:
         in: query
         name: offset
         type: integer
+      - description: Search by name
+        in: query
+        name: name
+        type: integer
       produces:
       - application/json
       responses:

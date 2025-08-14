@@ -152,7 +152,7 @@ func (r *UserRepo) GetById(ctx context.Context, req *entity.ById) (*entity.UserI
 	return &res, nil
 }
 
-func (r *UserRepo) GetAll(ctx context.Context, req *entity.Filter) (*entity.UserList, error) {
+func (r *UserRepo) GetAll(ctx context.Context, req *entity.Filter, name string) (*entity.UserList, error) {
 
 	resp := &entity.UserList{}
 
@@ -171,14 +171,20 @@ func (r *UserRepo) GetAll(ctx context.Context, req *entity.Filter) (*entity.User
 	`
 
 	var args []interface{}
+	argPos := 1 
+
+	if name != "" {
+		query += fmt.Sprintf(" AND name ILIKE $%d", argPos)
+		args = append(args, "%"+name+"%")
+		argPos++
+	}
 
 	if req.Limit == 0 {
-		query += " OFFSET $1"
+		query += fmt.Sprintf(" OFFSET $%d", argPos)
 		args = append(args, req.Offset)
 	} else {
-		query += " LIMIT $1 OFFSET $2"
-		args = append(args, req.Limit)
-		args = append(args, req.Offset)
+		query += fmt.Sprintf(" LIMIT $%d OFFSET $%d", argPos, argPos+1)
+		args = append(args, req.Limit, req.Offset)
 	}
 	rows, err := r.pg.Pool.Query(ctx, query, args...)
 	if err != nil {
