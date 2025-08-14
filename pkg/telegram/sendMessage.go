@@ -4,16 +4,17 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 )
 
 type Client struct {
 	Token   string
-	ChatID  string
+	ChatID  interface{}
 	BaseURL string
 }
 
-func NewClient(token, chatID string) *Client {
+func NewClient(token string, chatID interface{}) *Client {
 	return &Client{
 		Token:   token,
 		ChatID:  chatID,
@@ -27,8 +28,9 @@ func (c *Client) SendMessage(text string) error {
 	body := map[string]interface{}{
 		"chat_id":    c.ChatID,
 		"text":       text,
-		"parse_mode": "HTML", 
+		"parse_mode": "HTML",
 	}
+
 	jsonBody, _ := json.Marshal(body)
 
 	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonBody))
@@ -37,8 +39,11 @@ func (c *Client) SendMessage(text string) error {
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != 200 {
-		return fmt.Errorf("telegram API error: %s", resp.Status)
+	respData, _ := io.ReadAll(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("telegram API error: %s | response: %s", resp.Status, string(respData))
 	}
+
 	return nil
 }

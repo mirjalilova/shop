@@ -62,7 +62,7 @@ type (
 	// Telegram -.
 	Telegram struct {
 		Token   string `env-required:"true" yaml:"token" env:"TELEGRAM_TOKEN"`
-		ChatID  string `env-required:"true" yaml:"chat_id" env:"TELEGRAM_CHAT_ID"`
+		ChatID  interface{}  `env-required:"true" yaml:"chat_id" env:"TELEGRAM_CHAT_ID"`
 		BaseURL string `env-required:"true" yaml:"base_url" env:"TELEGRAM_BASE_URL"`
 	}
 )
