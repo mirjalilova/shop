@@ -143,3 +143,4 @@ func (r *DebtLogsRepo) Update(ctx context.Context, req entity.DebtLogUpdate) err
 
 	return nil
 }
+
