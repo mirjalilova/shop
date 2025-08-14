@@ -115,8 +115,8 @@ func (r *OrderRepo) GetOrders(ctx context.Context, status string, user_id string
 		SELECT
 			id,
 			status,
-			ST_Y(o.location::geometry) AS latitude,
-			ST_X(o.location::geometry) AS longitude,
+			ST_Y(location::geometry) AS latitude,
+			ST_X(location::geometry) AS longitude,
 			description,
 			payment_type,
 			bucket_id
@@ -134,16 +134,16 @@ func (r *OrderRepo) GetOrders(ctx context.Context, status string, user_id string
 		query += fmt.Sprintf(" AND user_id = '%s'", user_id)
 	}
 
-	rows, err := r.pg.Pool.Query(ctx, query)
+	orderRows, err := r.pg.Pool.Query(ctx, query)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer orderRows.Close()
 
-	for rows.Next() {
-		order := &entity.OrderRes{}
+	for orderRows.Next() {
+		order := entity.OrderRes{}
 		var bucket_id string
-		err = rows.Scan(
+		err = orderRows.Scan(
 			&order.ID,
 			&order.Status,
 			&order.Location.Latitude,
@@ -156,37 +156,36 @@ func (r *OrderRepo) GetOrders(ctx context.Context, status string, user_id string
 			return nil, err
 		}
 
-		query = `
-		SELECT
-			bi.id,
-			bi.product_id,
-			p.name,
-			p.size,
-			p.type,
-			p.price as product_price,
-			p.img_url,
-			bi.count,
-			bi.price,
-			b.total_price
-		FROM
-			buckets b 
-		JOIN bucket_item bi ON b.id = bi.bucket_id
-		JOIN products p ON bi.product_id = p.id
-		WHERE
-			b.id = $1
-		AND 
-			b.deleted_at = 0
-		`
-		rows, err = r.pg.Pool.Query(ctx, query, bucket_id)
+		itemQuery := `
+        SELECT
+            bi.id,
+            bi.product_id,
+            p.name,
+            p.size,
+            p.type,
+            p.price as product_price,
+            p.img_url,
+            bi.count,
+            bi.price,
+            b.total_price
+        FROM
+            buckets b 
+        JOIN bucket_item bi ON b.id = bi.bucket_id
+        JOIN products p ON bi.product_id = p.id
+        WHERE
+            b.id = $1
+        AND 
+            b.deleted_at = 0
+    `
+		itemRows, err := r.pg.Pool.Query(ctx, itemQuery, bucket_id)
 		if err != nil {
 			return nil, err
 		}
-		defer rows.Close()
 
 		items := []entity.OrderItemRes{}
-		for rows.Next() {
-			item := &entity.OrderItemRes{}
-			err = rows.Scan(
+		for itemRows.Next() {
+			var item entity.OrderItemRes
+			err = itemRows.Scan(
 				&item.Id,
 				&item.ProductID,
 				&item.ProductName,
@@ -199,14 +198,15 @@ func (r *OrderRepo) GetOrders(ctx context.Context, status string, user_id string
 				&order.TotalPrice,
 			)
 			if err != nil {
+				itemRows.Close()
 				return nil, err
 			}
-			items = append(items, *item)
+			items = append(items, item)
 		}
+		itemRows.Close()
 
 		order.Orders = items
-
-		res = append(res, *order)
+		res = append(res, order)
 	}
 
 	return &res, nil
