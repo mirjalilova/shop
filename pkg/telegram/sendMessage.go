@@ -10,11 +10,11 @@ import (
 
 type Client struct {
 	Token   string
-	ChatID  interface{}
+	ChatID  string
 	BaseURL string
 }
 
-func NewClient(token string, chatID interface{}) *Client {
+func NewClient(token string, chatID string) *Client {
 	return &Client{
 		Token:   token,
 		ChatID:  chatID,
