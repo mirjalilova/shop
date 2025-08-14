@@ -90,6 +90,12 @@ func (r *OrderRepo) Create(ctx context.Context, req *entity.OrderCreate) error {
 		return fmt.Errorf("error while updating bucket status: %w", err)
 	}
 
+	_, err = tr.Exec(ctx, `INSERT INTO buckets (user_id)VALUES($1)`, req.UserID)
+	if err != nil {
+		tr.Rollback(ctx)
+		return fmt.Errorf("error while creating bucket: %w", err)
+	}
+
 	if err := tr.Commit(ctx); err != nil {
 		tr.Rollback(ctx)
 		return fmt.Errorf("error while committing transaction: %w", err)
@@ -207,8 +213,16 @@ func (r *OrderRepo) GetOrders(ctx context.Context, status string, user_id string
 
 func (r *OrderRepo) sendOrderToTelegram(ctx context.Context, orderID string) {
 	query := `
-		SELECT o.id, u.name, u.phone_number, o.description, o.payment_type, o.created_at,
-		       ST_Y(o.location) AS lat, ST_X(o.location) AS lng, b.total_price
+		SELECT 
+			o.id, 
+			u.name, 
+			u.phone_number, 
+			o.description, 
+			o.payment_type, 
+			o.created_at,
+		    ST_Y(o.location) AS latitude,
+			ST_X(o.location) AS longitude,
+			b.total_price
 		FROM orders o
 		JOIN users u ON o.user_id = u.id
 		JOIN buckets b ON o.bucket_id = b.id
@@ -219,18 +233,25 @@ func (r *OrderRepo) sendOrderToTelegram(ctx context.Context, orderID string) {
 	var (
 		id, name, phone, description, paymentType string
 		createdAt                                 string
-		lat, lng, totalPrice                      interface{}
+		totalPrice                                int
 	)
-	if err := row.Scan(&id, &name, &phone, &description, &paymentType, &createdAt, &lat, &lng, &totalPrice); err != nil {
+	lat := entity.Location{}
+	if err := row.Scan(&id, &name, &phone, &description, &paymentType, &createdAt, &lat.Latitude, &lat.Longitude, &totalPrice); err != nil {
 		r.logger.Error("failed to fetch order for telegram: ", err)
 		return
 	}
 
 	itemRows, err := r.pg.Pool.Query(ctx, `
-		SELECT p.name, bi.count, bi.price
-		FROM bucket_item bi
-		JOIN products p ON bi.product_id = p.id
-		WHERE bi.bucket_id = (SELECT bucket_id FROM orders WHERE id = $1)
+		SELECT 
+			p.name, 
+			bi.count, 
+			bi.price
+		FROM 
+			bucket_item bi
+		JOIN 
+			products p ON bi.product_id = p.id
+		WHERE 
+			bi.bucket_id = (SELECT bucket_id FROM orders WHERE id = $1)
 	`, orderID)
 	if err != nil {
 		r.logger.Error("failed to fetch order items: ", err)
@@ -252,7 +273,7 @@ func (r *OrderRepo) sendOrderToTelegram(ctx context.Context, orderID string) {
 
 	message := fmt.Sprintf(
 		"<b>🆕 Yangi Buyurtma</b>\n\n🆔 ID: %s\n👤 Mijoz: %s\n📞 Telefon: %s\n📍 Joylashuv: %.6f, %.6f\n💳 To‘lov turi: %s\n🛒 Buyurtmalar:\n%s\n💰 Jami: %.2f\n🕒 Sana: %s",
-		id, name, phone, lat, lng, paymentType, itemsText, totalPrice, createdAt,
+		id, name, phone, lat.Latitude, lat.Longitude, paymentType, itemsText, totalPrice, createdAt,
 	)
 
 	tg := telegram.NewClient(r.config.Telegram.Token, r.config.Telegram.ChatID)
