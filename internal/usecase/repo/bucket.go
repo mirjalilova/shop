@@ -63,15 +63,15 @@ func (r *BucketRepo) Create(ctx context.Context, req *entity.BucketItemCreate) e
 		return err
 	}
 
-	query = `
-		UPDATE buckets  
-		SET total_price = total_price + $1 WHERE id = $2`
+	// query = `
+	// 	UPDATE buckets  
+	// 	SET total_price = total_price + $1 WHERE id = $2`
 
-	_, err = tr.Exec(ctx, query, float64(req.Count)*price, bucket_id)
-	if err != nil {
-		tr.Rollback(ctx)
-		return err
-	}
+	// _, err = tr.Exec(ctx, query, float64(req.Count)*price, bucket_id)
+	// if err != nil {
+	// 	tr.Rollback(ctx)
+	// 	return err
+	// }
 
 	return tr.Commit(ctx)
 }
@@ -178,45 +178,45 @@ func (r *BucketRepo) Update(ctx context.Context, req *entity.BucketItemUpdate) e
 		return err
 	}
 
-	var bucketID string
-	if err := tr.QueryRow(ctx,
-		`SELECT bucket_id FROM bucket_item WHERE id = $1`,
-		req.Id,
-	).Scan(&bucketID); err != nil {
-		tr.Rollback(ctx)
-		return err
-	}
+	// var bucketID string
+	// if err := tr.QueryRow(ctx,
+	// 	`SELECT bucket_id FROM bucket_item WHERE id = $1`,
+	// 	req.Id,
+	// ).Scan(&bucketID); err != nil {
+	// 	tr.Rollback(ctx)
+	// 	return err
+	// }
 
-	rows, err := tr.Query(ctx, `
-		SELECT count, price
-		FROM bucket_item
-		WHERE bucket_id = $1 AND deleted_at = 0`,
-		bucketID,
-	)
-	if err != nil {
-		tr.Rollback(ctx)
-		return err
-	}
-	defer rows.Close()
+	// rows, err := tr.Query(ctx, `
+	// 	SELECT count, price
+	// 	FROM bucket_item
+	// 	WHERE bucket_id = $1 AND deleted_at = 0`,
+	// 	bucketID,
+	// )
+	// if err != nil {
+	// 	tr.Rollback(ctx)
+	// 	return err
+	// }
+	// defer rows.Close()
 
-	var totalPrice float64
-	for rows.Next() {
-		var count int
-		var price float64
-		if err := rows.Scan(&count, &price); err != nil {
-			tr.Rollback(ctx)
-			return err
-		}
-		totalPrice += float64(count) * price
-	}
+	// var totalPrice float64
+	// for rows.Next() {
+	// 	var count int
+	// 	var price float64
+	// 	if err := rows.Scan(&count, &price); err != nil {
+	// 		tr.Rollback(ctx)
+	// 		return err
+	// 	}
+	// 	totalPrice += float64(count) * price
+	// }
 
-	if _, err := tr.Exec(ctx,
-		`UPDATE buckets SET total_price = $1 WHERE id = $2`,
-		totalPrice, bucketID,
-	); err != nil {
-		tr.Rollback(ctx)
-		return err
-	}
+	// if _, err := tr.Exec(ctx,
+	// 	`UPDATE buckets SET total_price = $1 WHERE id = $2`,
+	// 	totalPrice, bucketID,
+	// ); err != nil {
+	// 	tr.Rollback(ctx)
+	// 	return err
+	// }
 
 	return tr.Commit(ctx)
 }

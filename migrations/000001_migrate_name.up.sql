@@ -128,3 +128,45 @@ CREATE TRIGGER debt_logs_after_change
 AFTER INSERT OR UPDATE OR DELETE ON debt_logs
 FOR EACH ROW
 EXECUTE FUNCTION recalc_user_debt();
+
+
+
+-- total_caount
+CREATE OR REPLACE FUNCTION recalc_bucket_total(p_bucket_id UUID)
+RETURNS void AS $$
+DECLARE
+    v_total FLOAT;
+BEGIN
+    SELECT COALESCE(SUM(count * price), 0)
+    INTO v_total
+    FROM bucket_item
+    WHERE bucket_id = p_bucket_id
+      AND deleted_at = 0;
+
+    UPDATE buckets
+    SET total_price = v_total,
+        updated_at = NOW()
+    WHERE id = p_bucket_id;
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+
+CREATE OR REPLACE FUNCTION bucket_item_after_change()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF (TG_OP = 'DELETE') THEN
+        PERFORM recalc_bucket_total(OLD.bucket_id);
+    ELSE
+        PERFORM recalc_bucket_total(NEW.bucket_id);
+    END IF;
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_bucket_item_change
+AFTER INSERT OR UPDATE OR DELETE
+ON bucket_item
+FOR EACH ROW
+EXECUTE FUNCTION bucket_item_after_change();
