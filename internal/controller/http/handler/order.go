@@ -57,7 +57,7 @@ func (h *Handler) CreateOrder(c *gin.Context) {
 func (h *Handler) GetOrders(c *gin.Context) {
 	user_id := c.Query("id")
 
-	res, err := h.UseCase.OrderRepo.GetOrders(context.Background(), user_id, c.Query("status"))
+	res, err := h.UseCase.OrderRepo.GetOrders(context.Background(), c.Query("status"), user_id)
 	if err != nil {
 		c.JSON(500, gin.H{"Error getting Order by ID: ": err})
 		slog.Error("Error getting Order by ID: ", "err", err)
