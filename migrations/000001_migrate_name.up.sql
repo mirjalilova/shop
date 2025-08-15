@@ -106,12 +106,11 @@ CREATE OR REPLACE FUNCTION recalc_user_debt()
 RETURNS TRIGGER AS $$
 BEGIN
     UPDATE users u
-    SET debt = COALESCE(took_sum, 0) - COALESCE(gave_sum, 0)
+    SET debt = COALESCE(took_sum, 0)
     FROM (
         SELECT
             user_id,
-            SUM(CASE WHEN debt_type = 'took' AND deleted_at = 0 THEN amount ELSE 0 END) AS took_sum,
-            SUM(CASE WHEN debt_type = 'gave' AND deleted_at = 0 THEN amount ELSE 0 END) AS gave_sum
+            SUM(CASE WHEN debt_type = 'took' AND deleted_at = 0 THEN amount ELSE 0 END) AS took_sum
         FROM debt_logs
         WHERE deleted_at = 0
         GROUP BY user_id
@@ -123,8 +122,9 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-DROP TRIGGER IF EXISTS debt_logs_after_insert ON debt_logs;
-CREATE TRIGGER debt_logs_after_insert
+DROP TRIGGER IF EXISTS debt_logs_after_change ON debt_logs;
+
+CREATE TRIGGER debt_logs_after_change
 AFTER INSERT OR UPDATE OR DELETE ON debt_logs
 FOR EACH ROW
 EXECUTE FUNCTION recalc_user_debt();

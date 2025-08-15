@@ -128,6 +128,10 @@ func (r *DebtLogsRepo) Update(ctx context.Context, req entity.DebtLogUpdate) err
 	if req.Status != "" && req.Status != "string" {
 		conditions = append(conditions, " debt_type = $"+strconv.Itoa(len(args)+1))
 		args = append(args, req.Status)
+
+		if req.Status == "gave" {
+			conditions = append(conditions, " given_time = now()")
+		}
 	}
 
 	conditions = append(conditions, " updated_at = now()")
@@ -143,4 +147,3 @@ func (r *DebtLogsRepo) Update(ctx context.Context, req entity.DebtLogUpdate) err
 
 	return nil
 }
-
