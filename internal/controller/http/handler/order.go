@@ -74,7 +74,7 @@ func (h *Handler) GetOrders(c *gin.Context) {
 // @Tags Order
 // @Accept  json
 // @Produce  json
-// @Param id path string true "Order ID"
+// @Param id query string true "Order ID"
 // @Param status body entity.OrderStatus true "New Status"
 // @Success 200 {object} string
 // @Failure 400 {object} string
@@ -82,7 +82,7 @@ func (h *Handler) GetOrders(c *gin.Context) {
 // @Security BearerAuth
 // @Router /order/update [put]
 func (h *Handler) UpdateStatus(c *gin.Context) {
-	id := c.Param("id")
+	id := c.Query("id")
 	var status entity.OrderStatus
 	if err := c.BindJSON(&status); err != nil {
 		c.JSON(400, gin.H{"Error binding request body": err})

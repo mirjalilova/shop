@@ -279,16 +279,31 @@ func (r *OrderRepo) sendOrderToTelegram(ctx context.Context, orderID string) {
 			r.logger.Error("scan item error: ", err)
 			return
 		}
-		itemsText += fmt.Sprintf("• %s x%d — %.2f\n", pname, count, price)
+		itemsText += fmt.Sprintf("• %d x %s — %.2f\n", count, pname, price)
 	}
 
+	// googleMapLink := fmt.Sprintf("https://www.google.com/maps?q=%.6f,%.6f", lat.Latitude, lat.Longitude)
+	yandexMapLink := fmt.Sprintf("https://yandex.com/maps/?pt=%.6f,%.6f&z=18&l=map", lat.Longitude, lat.Latitude)
+
 	message := fmt.Sprintf(
-		"<b>🆕 Yangi Buyurtma</b>\n\n🆔 ID: %s\n👤 Mijoz: %s\n📞 Telefon: %s\n📍 Joylashuv: %.6f, %.6f\n💳 To‘lov turi: %s\n🛒 Buyurtmalar:\n%s\n💰 Jami: %d\n🕒 Sana: %s",
-		id, name, phone, lat.Latitude, lat.Longitude, paymentType, itemsText, totalPrice, createdAt.Format("2006-01-02 15:04:05"),
+		"<b>🆕 Yangi Buyurtma</b>\n\n"+
+			"🆔 ID: %s\n"+
+			"👤 Mijoz: %s\n"+
+			"📞 Telefon: %s\n"+
+			"💳 To‘lov turi: %s\n"+
+			"🛒 Buyurtmalar:\n%s\n"+
+			"💰 Jami: %d\n"+
+			"🕒 Sana: %s"+
+			"📍 Joylashuv: <a href=\"%s\">Google Maps</a> | <a href=\"%s\">Yandex Maps</a>\n",
+		id, name, phone,
+		paymentType, itemsText, totalPrice,
+		createdAt.Format("2006-01-02 15:04:05"),
+		yandexMapLink,
 	)
 
 	tg := telegram.NewClient(r.config.Telegram.Token, r.config.Telegram.ChatID)
 	if err := tg.SendMessage(message); err != nil {
 		r.logger.Error("telegram send error: ", err)
 	}
+
 }
