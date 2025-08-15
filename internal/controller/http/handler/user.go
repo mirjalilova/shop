@@ -146,6 +146,7 @@ func (h *Handler) UpdateUser(c *gin.Context) {
 // @Produce  json
 // @Param limit query int false "Limit"
 // @Param offset query int false "Offset"
+// @Param name query string false "Search by name"
 // @Success 200 {object} entity.UserList
 // @Failure 400 {object} string
 // @Failure 500 {object} string
@@ -167,7 +168,7 @@ func (h *Handler) GetAllUsers(c *gin.Context) {
 		Offset: offsetValue,
 	}
 
-	res, err := h.UseCase.UserRepo.GetAll(context.Background(), req)
+	res, err := h.UseCase.UserRepo.GetAll(context.Background(), req, c.Query("name"))
 	if err != nil {
 		c.JSON(500, gin.H{"Error getting Users:": err})
 		slog.Error("Error getting Users: ", "err", err)
