@@ -811,7 +811,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Order ID",
                         "name": "id",
-                        "in": "path",
+                        "in": "query",
                         "required": true
                     },
                     {

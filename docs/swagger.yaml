@@ -788,7 +788,7 @@ paths:
       description: Update the status of an Order by its ID
       parameters:
       - description: Order ID
-        in: path
+        in: query
         name: id
         required: true
         type: string
