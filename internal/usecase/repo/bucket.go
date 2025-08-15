@@ -2,11 +2,11 @@ package repo
 
 import (
 	"context"
+	"fmt"
 	"shop/config"
 	"shop/internal/entity"
 	"shop/pkg/logger"
 	"shop/pkg/postgres"
-	"strconv"
 	"strings"
 )
 
@@ -146,77 +146,74 @@ func (r *BucketRepo) Update(ctx context.Context, req *entity.BucketItemUpdate) e
 		return err
 	}
 
-	query := `
-		UPDATE 
-			bucket_item
-		SET `
-
-	var conditions []string
-	var args []interface{}
+	var (
+		conditions []string
+		args       []interface{}
+	)
 
 	if req.Count != 0 {
-		conditions = append(conditions, " count = $"+strconv.Itoa(len(args)+1))
+		conditions = append(conditions, fmt.Sprintf("count = $%d", len(args)+1))
 		args = append(args, req.Count)
 	}
 
 	if req.Price != 0 {
-		conditions = append(conditions, " price = $"+strconv.Itoa(len(args)+1))
+		conditions = append(conditions, fmt.Sprintf("price = $%d", len(args)+1))
 		args = append(args, req.Price)
 	}
 
-	conditions = append(conditions, " updated_at = now()")
-	query += strings.Join(conditions, ", ")
-	query += " WHERE id = $" + strconv.Itoa(len(args)+1) + " AND deleted_at = 0"
+	conditions = append(conditions, "updated_at = now()")
 
-	args = append(args, req.Id)
+	query := fmt.Sprintf(`
+		UPDATE bucket_item
+		SET %s
+		WHERE id = $%d AND deleted_at = 0`,
+		strings.Join(conditions, ", "),
+		len(args)+1,
+	)
 
-	_, err = tr.Exec(ctx, query, args...)
-	if err != nil {
+	args = append(args, req.Id) 
+
+	if _, err := tr.Exec(ctx, query, args...); err != nil {
 		tr.Rollback(ctx)
 		return err
 	}
 
-	var bucket_id string
-	query = "SELECT bucket_id from bucket_item where id = $1"
-	err = tr.QueryRow(ctx, req.Id).Scan(&bucket_id)
-	if err != nil {
+	var bucketID string
+	if err := tr.QueryRow(ctx,
+		`SELECT bucket_id FROM bucket_item WHERE id = $1`,
+		req.Id,
+	).Scan(&bucketID); err != nil {
 		tr.Rollback(ctx)
 		return err
 	}
 
-	query = `
-			SELECT 
-				count,
-				price
-			FROM 
-				bucket_item
-			WHERE 
-				bucket_id = $1
-			AND deleted_at = 0`
-
-	rows, err := tr.Query(ctx, query, bucket_id)
+	rows, err := tr.Query(ctx, `
+		SELECT count, price
+		FROM bucket_item
+		WHERE bucket_id = $1 AND deleted_at = 0`,
+		bucketID,
+	)
 	if err != nil {
 		tr.Rollback(ctx)
 		return err
 	}
-	rows.Close()
+	defer rows.Close()
 
-	var total_count float64
+	var totalPrice float64
 	for rows.Next() {
 		var count int
 		var price float64
-
-		err = rows.Scan(&count, &price)
-		if err != nil {
+		if err := rows.Scan(&count, &price); err != nil {
+			tr.Rollback(ctx)
 			return err
 		}
-
-		total_count += float64(count) * price
+		totalPrice += float64(count) * price
 	}
 
-	query = "UPDATE buckets set total_price = $1 where id = $2"
-	_, err = tr.Exec(ctx, query, total_count, bucket_id)
-	if err != nil {
+	if _, err := tr.Exec(ctx,
+		`UPDATE buckets SET total_price = $1 WHERE id = $2`,
+		totalPrice, bucketID,
+	); err != nil {
 		tr.Rollback(ctx)
 		return err
 	}

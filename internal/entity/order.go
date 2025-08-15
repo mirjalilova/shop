@@ -29,3 +29,7 @@ type OrderRes struct {
 	Description string         `json:"description"`
 	PaymentType string         `json:"payment_type"`
 }
+
+type OrderStatus struct {
+	Status string `json:"status"`
+}

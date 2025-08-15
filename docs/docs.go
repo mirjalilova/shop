@@ -820,7 +820,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/entity.OrderStatus"
                         }
                     }
                 ],
@@ -1747,6 +1747,14 @@ const docTemplate = `{
                 },
                 "total_price": {
                     "type": "number"
+                }
+            }
+        },
+        "entity.OrderStatus": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string"
                 }
             }
         },

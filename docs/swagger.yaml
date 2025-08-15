@@ -202,6 +202,11 @@ definitions:
       total_price:
         type: number
     type: object
+  entity.OrderStatus:
+    properties:
+      status:
+        type: string
+    type: object
   entity.ProductCreate:
     properties:
       category_id:
@@ -792,7 +797,7 @@ paths:
         name: status
         required: true
         schema:
-          type: string
+          $ref: '#/definitions/entity.OrderStatus'
       produces:
       - application/json
       responses:

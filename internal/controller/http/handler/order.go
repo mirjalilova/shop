@@ -75,7 +75,7 @@ func (h *Handler) GetOrders(c *gin.Context) {
 // @Accept  json
 // @Produce  json
 // @Param id path string true "Order ID"
-// @Param status body string true "New Status"
+// @Param status body entity.OrderStatus true "New Status"
 // @Success 200 {object} string
 // @Failure 400 {object} string
 // @Failure 500 {object} string
@@ -83,14 +83,14 @@ func (h *Handler) GetOrders(c *gin.Context) {
 // @Router /order/update [put]
 func (h *Handler) UpdateStatus(c *gin.Context) {
 	id := c.Param("id")
-	var status string
+	var status entity.OrderStatus
 	if err := c.BindJSON(&status); err != nil {
 		c.JSON(400, gin.H{"Error binding request body": err})
 		slog.Error("Error binding request body: ", "err", err)
 		return
 	}
 
-	err := h.UseCase.OrderRepo.Update(context.Background(), status, id)
+	err := h.UseCase.OrderRepo.Update(context.Background(), status.Status, id)
 	if err != nil {
 		c.JSON(500, gin.H{"Error updating Order status: ": err})
 		slog.Error("Error updating Order status: ", "err", err)
