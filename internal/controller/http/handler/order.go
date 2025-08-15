@@ -67,3 +67,36 @@ func (h *Handler) GetOrders(c *gin.Context) {
 	slog.Info("Order retrieved successfully")
 	c.JSON(200, res)
 }
+
+// UpdateStatus godoc
+// @Summary Update status by id
+// @Description Update the status of an Order by its ID
+// @Tags Order
+// @Accept  json
+// @Produce  json
+// @Param id path string true "Order ID"
+// @Param status body string true "New Status"
+// @Success 200 {object} string
+// @Failure 400 {object} string
+// @Failure 500 {object} string
+// @Security BearerAuth
+// @Router /order/update [put]
+func (h *Handler) UpdateStatus(c *gin.Context) {
+	id := c.Param("id")
+	var status string
+	if err := c.BindJSON(&status); err != nil {
+		c.JSON(400, gin.H{"Error binding request body": err})
+		slog.Error("Error binding request body: ", "err", err)
+		return
+	}
+
+	err := h.UseCase.OrderRepo.Update(context.Background(), status, id)
+	if err != nil {
+		c.JSON(500, gin.H{"Error updating Order status: ": err})
+		slog.Error("Error updating Order status: ", "err", err)
+		return
+	}
+
+	slog.Info("Order status updated successfully")
+	c.JSON(200, gin.H{"Message": "Order status updated successfully"})
+}

@@ -28,13 +28,20 @@ func (r *BucketRepo) Create(ctx context.Context, req *entity.BucketItemCreate) e
 
 	var bucket_id string
 
-	query := "SELECT id from buckets where user_id = $1 AND deleted_at = 0 AND status = false LIMIT 1"
-
-	err := r.pg.Pool.QueryRow(ctx, query, req.UserID).Scan(&bucket_id)
+	tr, err := r.pg.Pool.Begin(ctx)
 	if err != nil {
 		return err
 	}
 
+	query := "SELECT id from buckets where user_id = $1 AND deleted_at = 0 AND status = false LIMIT 1"
+
+	err = tr.QueryRow(ctx, query, req.UserID).Scan(&bucket_id)
+	if err != nil {
+		tr.Rollback(ctx)
+		return err
+	}
+
+	var price float64
 	query = `
 		INSERT INTO bucket_item (bucket_id, product_id, count, price)
 		SELECT
@@ -43,18 +50,30 @@ func (r *BucketRepo) Create(ctx context.Context, req *entity.BucketItemCreate) e
 			$3 AS count,
 			price
 		FROM products
-		WHERE id = $2`
+		WHERE id = $2
+		RETURNING price`
 
-	_, err = r.pg.Pool.Exec(ctx, query,
+	err = tr.QueryRow(ctx, query,
 		bucket_id,
 		req.ProductID,
 		req.Count,
-	)
+	).Scan(&price)
 	if err != nil {
+		tr.Rollback(ctx)
 		return err
 	}
 
-	return nil
+	query = `
+		UPDATE buckets  
+		SET total_price = total_price + $1 WHERE id = $2`
+
+	_, err = tr.Exec(ctx, query, float64(req.Count)*price, bucket_id)
+	if err != nil {
+		tr.Rollback(ctx)
+		return err
+	}
+
+	return tr.Commit(ctx)
 }
 
 func (r *BucketRepo) GetBucket(ctx context.Context, user_id string) (*entity.BucketRes, error) {
@@ -122,6 +141,11 @@ func (r *BucketRepo) GetBucket(ctx context.Context, user_id string) (*entity.Buc
 }
 
 func (r *BucketRepo) Update(ctx context.Context, req *entity.BucketItemUpdate) error {
+	tr, err := r.pg.Pool.Begin(ctx)
+	if err != nil {
+		return err
+	}
+
 	query := `
 		UPDATE 
 			bucket_item
@@ -146,12 +170,58 @@ func (r *BucketRepo) Update(ctx context.Context, req *entity.BucketItemUpdate) e
 
 	args = append(args, req.Id)
 
-	_, err := r.pg.Pool.Exec(ctx, query, args...)
+	_, err = tr.Exec(ctx, query, args...)
 	if err != nil {
+		tr.Rollback(ctx)
 		return err
 	}
 
-	return nil
+	var bucket_id string
+	query = "SELECT bucket_id from bucket_item where id = $1"
+	err = tr.QueryRow(ctx, req.Id).Scan(&bucket_id)
+	if err != nil {
+		tr.Rollback(ctx)
+		return err
+	}
+
+	query = `
+			SELECT 
+				count,
+				price
+			FROM 
+				bucket_item
+			WHERE 
+				bucket_id = $1
+			AND deleted_at = 0`
+
+	rows, err := tr.Query(ctx, query, bucket_id)
+	if err != nil {
+		tr.Rollback(ctx)
+		return err
+	}
+	rows.Close()
+
+	var total_count float64
+	for rows.Next() {
+		var count int
+		var price float64
+
+		err = rows.Scan(&count, &price)
+		if err != nil {
+			return err
+		}
+
+		total_count += float64(count) * price
+	}
+
+	query = "UPDATE buckets set total_price = $1 where id = $2"
+	_, err = tr.Exec(ctx, query, total_count, bucket_id)
+	if err != nil {
+		tr.Rollback(ctx)
+		return err
+	}
+
+	return tr.Commit(ctx)
 }
 
 func (r *BucketRepo) Delete(ctx context.Context, id string) error {

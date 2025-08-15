@@ -776,6 +776,43 @@ paths:
       summary: Get Orders
       tags:
       - Order
+  /order/update:
+    put:
+      consumes:
+      - application/json
+      description: Update the status of an Order by its ID
+      parameters:
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: New Status
+        in: body
+        name: status
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Update status by id
+      tags:
+      - Order
   /product/create:
     post:
       consumes:

@@ -212,6 +212,16 @@ func (r *OrderRepo) GetOrders(ctx context.Context, status string, user_id string
 	return &res, nil
 }
 
+func (r *OrderRepo) Update(ctx context.Context, status, id string) error {
+	query := `
+		UPDATE orders
+		SET status = $1
+		WHERE id = $2 AND deleted_at = 0
+	`
+	_, err := r.pg.Pool.Exec(ctx, query, status, id)
+	return err
+}
+
 func (r *OrderRepo) sendOrderToTelegram(ctx context.Context, orderID string) {
 	query := `
 		SELECT 

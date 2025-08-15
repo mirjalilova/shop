@@ -51,6 +51,7 @@ type (
 	OrderRepoI interface {
 		Create(ctx context.Context, req *entity.OrderCreate) error
 		GetOrders(ctx context.Context, status string, user_id string) (*[]entity.OrderRes, error)
+		Update(ctx context.Context, status, id string) error
 	}
 
 	// DebtLogsRepo -.
