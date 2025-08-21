@@ -60,4 +60,10 @@ type (
 		GetDebtLogs(ctx context.Context, user_id string, status string) (*entity.DebtLogGetAllRes, error)
 		Update(ctx context.Context, req entity.DebtLogUpdate) error
 	}
+
+	// KassaRepo -.
+	KassaRepoI interface {
+		AddItem(ctx context.Context, productID string) error
+		Formalize(ctx context.Context, formalize []entity.Formalize) error
+	}
 )

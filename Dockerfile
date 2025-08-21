@@ -25,6 +25,6 @@ RUN ln -snf /usr/share/zoneinfo/Asia/Tashkent /etc/localtime && echo "Asia/Tashk
 
 RUN chmod +x /app/shop
 
-EXPOSE 8181
+EXPOSE 8181 7070
 
 CMD ["/app/shop"]

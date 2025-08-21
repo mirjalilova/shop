@@ -126,6 +126,13 @@ definitions:
       status:
         type: string
     type: object
+  entity.Formalize:
+    properties:
+      count:
+        type: integer
+      product_id:
+        type: string
+    type: object
   entity.Location:
     properties:
       latitude:
@@ -715,6 +722,71 @@ paths:
       summary: File upload
       tags:
       - file-upload
+  /kassa/add:
+    post:
+      consumes:
+      - application/json
+      description: Add an item to the Kassa
+      parameters:
+      - description: Product ID
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Add an item to the Kassa
+      tags:
+      - Kassa
+  /kassa/formalize:
+    post:
+      consumes:
+      - application/json
+      description: Formalize an item in the Kassa
+      parameters:
+      - description: Formalize body
+        in: body
+        name: id
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/entity.Formalize'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Formalize an item in the Kassa
+      tags:
+      - Kassa
   /order/create:
     post:
       consumes:

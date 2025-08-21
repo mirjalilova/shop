@@ -78,7 +78,7 @@ func (r *OrderRepo) Create(ctx context.Context, req *entity.OrderCreate) error {
 			return err
 		}
 
-		_, err = tr.Exec(ctx, `UPDATE products SET count = count - $2 WHERE id = $1`, productID, count)
+		_, err = tr.Exec(ctx, `UPDATE products SET count = count - $2, sales_count = sales_count + $2 WHERE id = $1`, productID, count)
 		if err != nil {
 			tr.Rollback(ctx)
 			return fmt.Errorf("error while updating product count: %w", err)
@@ -287,15 +287,14 @@ func (r *OrderRepo) sendOrderToTelegram(ctx context.Context, orderID string) {
 
 	message := fmt.Sprintf(
 		"<b>🆕 Yangi Buyurtma</b>\n\n"+
-			"🆔 ID: %s\n"+
 			"👤 Mijoz: %s\n"+
 			"📞 Telefon: %s\n"+
 			"💳 To‘lov turi: %s\n"+
 			"🛒 Buyurtmalar:\n%s\n"+
 			"💰 Jami: %d\n"+
 			"🕒 Sana: %s"+
-			"📍 Joylashuv: <a href=\"%s\">Google Maps</a> | <a href=\"%s\">Yandex Maps</a>\n",
-		id, name, phone,
+			"📍 Joylashuv: <a href=\"%s\">Yandex Maps</a>\n",
+		name, phone,
 		paymentType, itemsText, totalPrice,
 		createdAt.Format("2006-01-02 15:04:05"),
 		yandexMapLink,

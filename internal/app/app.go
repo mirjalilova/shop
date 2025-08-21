@@ -3,6 +3,7 @@ package app
 import (
 	"fmt"
 	"log/slog"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -18,6 +19,7 @@ import (
 	"shop/pkg/logger"
 	"shop/pkg/minio"
 	"shop/pkg/postgres"
+	"shop/pkg/ws"
 )
 
 func Run(cfg *config.Config) {
@@ -52,8 +54,14 @@ func Run(cfg *config.Config) {
 	}
 	defer pg.Close()
 
+	hub := ws.NewHub()
+
 	// Use case
-	useCase := usecase.New(pg, cfg, l)
+	useCase := usecase.New(pg, cfg, l, hub)
+
+	go func() {
+		StartWebSocketServer(cfg, useCase, hub)
+	}()
 
 	//MinIO
 	minioClient, err := minio.MinIOConnect(cfg)
@@ -87,4 +95,16 @@ func Run(cfg *config.Config) {
 		l.Error(fmt.Errorf("app - Run - httpServer.Shutdown: %w", err))
 	}
 
+}
+
+func StartWebSocketServer(cfg *config.Config, db *usecase.UseCase, hub *ws.Hub) {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/ws", WebSocketHandler(db, hub))
+	mux.HandleFunc("/ws/", WebSocketHandler(db, hub))
+
+	slog.Info("Starting WebSocket server", "port", cfg.Websocket.Port)
+
+	if err := http.ListenAndServe(fmt.Sprintf(":%d", cfg.Websocket.Port), mux); err != nil {
+		slog.Error("Failed to start WebSocket server", "err", err)
+	}
 }

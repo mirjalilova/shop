@@ -9,14 +9,15 @@ import (
 type (
 	// Config -.
 	Config struct {
-		App      `yaml:"app"`
-		HTTP     `yaml:"http"`
-		Log      `yaml:"logger"`
-		PG       `yaml:"postgres"`
-		Minio    `yaml:"minio"`
-		ApiKey   `yaml:"api_key"`
-		JWT      `yaml:"jwt"`
-		Telegram `yaml:"telegram"`
+		App       `yaml:"app"`
+		HTTP      `yaml:"http"`
+		Log       `yaml:"logger"`
+		PG        `yaml:"postgres"`
+		Minio     `yaml:"minio"`
+		ApiKey    `yaml:"api_key"`
+		JWT       `yaml:"jwt"`
+		Telegram  `yaml:"telegram"`
+		Websocket `yaml:"websocket"`
 	}
 
 	// App -.
@@ -64,6 +65,11 @@ type (
 		Token   string `env-required:"true" yaml:"token" env:"TELEGRAM_TOKEN"`
 		ChatID  string `env-required:"true" yaml:"chat_id" env:"TELEGRAM_CHAT_ID"`
 		BaseURL string `env-required:"true" yaml:"base_url" env:"TELEGRAM_BASE_URL"`
+	}
+
+	// Websocket -.
+	Websocket struct {
+		Port int `env-required:"true" yaml:"port" env:"WebsocketPort"`
 	}
 )
 

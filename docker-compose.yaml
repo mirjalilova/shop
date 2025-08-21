@@ -6,6 +6,7 @@ services:
       - .env
     ports:
       - 8181:8181
+      - 7070:7070
     networks:
       - shop_ntwrk  
     environment:
