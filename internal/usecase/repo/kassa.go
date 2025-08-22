@@ -34,18 +34,19 @@ func NewKassaRepo(pg *postgres.Postgres, config *config.Config, logger *logger.L
 
 func (r *KassaRepo) AddItem(ctx context.Context, productID string) error {
 	query := `
-		SELECT id, name, price, img_url, count, size
+		SELECT id, name, price, img_url, size
 		FROM products 
 		WHERE id = $1 AND deleted_at = 0
 	`
 
 	res := entity.KassaEvent{}
 	err := r.pg.Pool.QueryRow(ctx, query, productID).
-		Scan(&res.ProductID, &res.Name, &res.Price, &res.ImgURL, &res.Count, &res.Size)
+		Scan(&res.ProductID, &res.Name, &res.Price, &res.ImgURL, &res.Size)
 	if err != nil {
 		return err
 	}
 
+	res.Count = 1
 	// eventni broadcast qilish
 	r.broadcastEvent(res)
 
