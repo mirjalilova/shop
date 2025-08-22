@@ -9,6 +9,7 @@ type ProductCreate struct {
 	Count       int     `json:"count"`
 	Description string  `json:"description"`
 	CategoryId  string  `json:"category_id"`
+	QRCode      string  `json:"qr_code"`
 }
 
 type ProductUpdate struct {
@@ -21,6 +22,7 @@ type ProductUpdate struct {
 	Count       int     `json:"count"`
 	Description string  `json:"description"`
 	CategoryId  string  `json:"category_id"`
+	QRCode      string  `json:"qr_code"`
 }
 
 type ProductRes struct {

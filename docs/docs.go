@@ -1893,6 +1893,9 @@ const docTemplate = `{
                 "price": {
                     "type": "number"
                 },
+                "qr_code": {
+                    "type": "string"
+                },
                 "size": {
                     "type": "integer"
                 },

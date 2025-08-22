@@ -56,6 +56,7 @@ CREATE TABLE IF NOT EXISTS products (
     sales_count INT NOT NULL DEFAULT 0,
     category_id UUID NOT NULL REFERENCES category(id) ON DELETE CASCADE,
     description TEXT NOT NULL,
+    qr_code TEXT,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
     deleted_at BIGINT NOT NULL DEFAULT 0

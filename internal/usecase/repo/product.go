@@ -40,8 +40,9 @@ func (r *ProductRepo) Create(ctx context.Context, req *entity.ProductCreate) err
 			price,
 			count,
 			description,
-			category_id
-		) VALUES($1, $2, $3, $4, $5, $6, $7, $8)`
+			category_id,
+			qr_code
+		) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)`
 
 	_, err := r.pg.Pool.Exec(ctx, query,
 		req.Name,
@@ -52,6 +53,7 @@ func (r *ProductRepo) Create(ctx context.Context, req *entity.ProductCreate) err
 		req.Count,
 		req.Description,
 		req.CategoryId,
+		req.QRCode,
 	)
 	if err != nil {
 		return err
@@ -227,6 +229,11 @@ func (r *ProductRepo) Update(ctx context.Context, req *entity.ProductUpdate) err
 	if req.CategoryId != "" && req.CategoryId != "string" {
 		conditions = append(conditions, " category_id = $"+strconv.Itoa(len(args)+1))
 		args = append(args, req.CategoryId)
+	}
+
+	if req.QRCode != "" && req.QRCode != "string" {
+		conditions = append(conditions, " qr_code = $"+strconv.Itoa(len(args)+1))
+		args = append(args, req.QRCode)
 	}
 
 	conditions = append(conditions, " updated_at = now()")
