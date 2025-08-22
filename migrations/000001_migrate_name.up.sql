@@ -4,7 +4,7 @@ CREATE TYPE product_type AS ENUM('g', 'ml', 'countable');
 
 CREATE TYPE payment_type AS ENUM('cash', 'card');
 
-CREATE TYPE order_status AS ENUM ('pending', 'confirmed', 'shipped', 'delivered', 'cancelled', 'returned');
+CREATE TYPE order_status AS ENUM ('pending', 'confirmed', 'shipped', 'delivered', 'cancelled', 'returned', 'completed');
 
 CREATE TYPE debt_type AS ENUM ('took', 'gave');
 
