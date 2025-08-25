@@ -27,7 +27,7 @@ type File struct {
 // @Router /img-upload [post]
 // @Success 200 {object} string
 func (h *Handler) UploadFile(c *gin.Context) {
-	file, header, err := c.Request.FormFile("file")
+	file, _, err := c.Request.FormFile("file")
 	if err != nil {
 		slog.Error("Error uploading file", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "File not provided"})
@@ -36,7 +36,7 @@ func (h *Handler) UploadFile(c *gin.Context) {
 	defer file.Close()
 
 	id := uuid.NewString()
-	fileName := id + header.Filename
+	fileName := id + ".jpg"
 
 	tempFilePath := filepath.Join("./internal/media", fileName)
 	out, err := os.Create(tempFilePath)

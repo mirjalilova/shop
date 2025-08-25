@@ -108,6 +108,37 @@ func (h *Handler) UpdateDebt(c *gin.Context) {
 	c.JSON(200, "Debt updated successfully")
 }
 
+// Report godoc
+// @Summary Generate Debt Report
+// @Description Generate a report of Debts within a specified date range
+// @Tags Debt
+// @Accept  json
+// @Produce  json
+// @Param Debt body entity.Report true "Chek"
+// @Success 200 {object} string
+// @Failure 400 {object} string
+// @Failure 500 {object} string
+// @Security BearerAuth
+// @Router /debt/report [post]
+func (h *Handler) Report(c *gin.Context) {
+	reqBody := entity.Report{}
+	err := c.BindJSON(&reqBody)
+	if err != nil {
+		slog.Error("Error binding request body: ", "err", err)
+		c.JSON(400, gin.H{"Error binding request body": err})
+		return
+	}
+
+	err = h.UseCase.DebtLogsRepo.Report(context.Background(), &reqBody)
+	if err != nil {
+		c.JSON(500, gin.H{"Error generating report:": err})
+		slog.Error("Error generating report: ", "err", err)
+		return
+	}
+	slog.Info("Report generated successfully")
+	c.JSON(200, "Report generated successfully")
+}
+
 // // DeleteDebtItem godoc
 // // @Summary Delete an Debt
 // // @Description Delete an Debt by ID
@@ -133,3 +164,5 @@ func (h *Handler) UpdateDebt(c *gin.Context) {
 // 	slog.Info("Debt deleted successfully")
 // 	c.JSON(200, "Debt deleted successfully")
 // }
+
+

@@ -34,3 +34,8 @@ type DebtLogGetAllRes struct {
 	DebtLogs []DebtLogRes `json:"debt_logs"`
 	Count    int          `json:"count"`
 }
+
+type Report struct {
+	UserId string `json:"user_id"`
+	Chek   string `json:"chek"`
+}

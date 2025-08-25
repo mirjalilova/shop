@@ -267,6 +267,13 @@ definitions:
       type:
         type: string
     type: object
+  entity.Report:
+    properties:
+      chek:
+        type: string
+      user_id:
+        type: string
+    type: object
   entity.UpdateUserBody:
     properties:
       name:
@@ -662,6 +669,38 @@ paths:
       security:
       - BearerAuth: []
       summary: Get Debt by ID
+      tags:
+      - Debt
+  /debt/report:
+    post:
+      consumes:
+      - application/json
+      description: Generate a report of Debts within a specified date range
+      parameters:
+      - description: Chek
+        in: body
+        name: Debt
+        required: true
+        schema:
+          $ref: '#/definitions/entity.Report'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Generate Debt Report
       tags:
       - Debt
   /debt/update:

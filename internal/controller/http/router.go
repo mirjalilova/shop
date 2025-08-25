@@ -120,6 +120,7 @@ func NewRouter(engine *gin.Engine, l *logger.Logger, config *config.Config, useC
 		debt.GET("/get", handlerV1.GetDebts)
 		debt.POST("/create", handlerV1.DebtLogCreate)
 		debt.PUT("/update", handlerV1.UpdateDebt)
+		debt.POST("report", handlerV1.Report)
 	}
 
 	kassa := engine.Group("/kassa")
