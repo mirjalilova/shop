@@ -192,12 +192,13 @@ func (r *DebtLogsRepo) sendDebtToTelegram(ctx context.Context, name, phoneNumber
 		phoneNumber,
 		debt,
 		time.Now().Format("2006-01-02 15:04:05"),
+		
 		chek,
 	)
 
 	// encodedURL := url.PathEscape(chek)
 
-	
+
 	tg := telegram.NewClient(r.config.Telegram.Token, r.config.Telegram.ChatID)
 	if err := tg.SendMessage(message); err != nil {
 		r.logger.Error("telegram send error: ", err)
