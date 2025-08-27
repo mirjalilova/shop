@@ -141,6 +141,7 @@ func (r *OrderRepo) GetOrders(ctx context.Context, status string, user_id string
 	defer orderRows.Close()
 
 	for orderRows.Next() {
+		fmt.Println(11111111111)
 		order := entity.OrderRes{}
 		var bucket_id string
 		err = orderRows.Scan(
@@ -184,6 +185,7 @@ func (r *OrderRepo) GetOrders(ctx context.Context, status string, user_id string
 
 		items := []entity.OrderItemRes{}
 		for itemRows.Next() {
+				fmt.Println(22222222222)
 			var item entity.OrderItemRes
 			err = itemRows.Scan(
 				&item.Id,
