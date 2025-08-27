@@ -7,6 +7,7 @@ import (
 	"shop/internal/entity"
 	"shop/pkg/logger"
 	"shop/pkg/postgres"
+	"shop/pkg/telegram"
 	"strconv"
 	"strings"
 	"time"
@@ -108,7 +109,15 @@ func (r *DebtLogsRepo) GetDebtLogs(ctx context.Context, user_id string, status s
 }
 
 func (r *DebtLogsRepo) Update(ctx context.Context, req entity.DebtLogUpdate) error {
-	query := `
+
+	query := "SELECT amount FROM debt_logs WHERE id = $1 AND deleted_at = 0"
+	var currentAmount int
+	err := r.pg.Pool.QueryRow(ctx, query, req.ID).Scan(&currentAmount)
+	if err != nil {
+		return err
+	}
+
+	query = `
 		UPDATE debt_logs
 		SET 
 	`
@@ -116,7 +125,7 @@ func (r *DebtLogsRepo) Update(ctx context.Context, req entity.DebtLogUpdate) err
 	var args []interface{}
 
 	if req.Amount != 0 {
-		conditions = append(conditions, " amount = $"+strconv.Itoa(len(args)+1))
+		conditions = append(conditions, " amount = amount - $"+strconv.Itoa(len(args)+1))
 		args = append(args, req.Amount)
 	}
 
@@ -126,8 +135,10 @@ func (r *DebtLogsRepo) Update(ctx context.Context, req entity.DebtLogUpdate) err
 	}
 
 	if req.Status != "" && req.Status != "string" {
-		conditions = append(conditions, " debt_type = $"+strconv.Itoa(len(args)+1))
-		args = append(args, req.Status)
+		if req.Amount == currentAmount {
+			conditions = append(conditions, " debt_type = $"+strconv.Itoa(len(args)+1))
+			args = append(args, req.Status)
+		}
 
 		if req.Status == "gave" {
 			conditions = append(conditions, " given_time = now()")
@@ -140,10 +151,56 @@ func (r *DebtLogsRepo) Update(ctx context.Context, req entity.DebtLogUpdate) err
 
 	args = append(args, req.ID)
 
-	_, err := r.pg.Pool.Exec(ctx, query, args...)
+	_, err = r.pg.Pool.Exec(ctx, query, args...)
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func (r *DebtLogsRepo) Report(ctx context.Context, report *entity.Report) error {
+	query := `
+		SELECT
+			name,
+			phone_number,
+			debt
+		FROM users
+		WHERE id = $1 AND deleted_at = 0
+	`
+	var name, phoneNumber string
+	var debt int
+	err := r.pg.Pool.QueryRow(ctx, query, report.UserId).Scan(&name, &phoneNumber, &debt)
+	if err != nil {
+		return err
+	}
+
+	go r.sendDebtToTelegram(context.Background(), name, phoneNumber, report.Chek, debt)
+
+	return nil
+}
+func (r *DebtLogsRepo) sendDebtToTelegram(ctx context.Context, name, phoneNumber, chek string, debt int) {
+
+	message := fmt.Sprintf(
+		"🆕 Qarz tolanganlik haqida xabar\n\n"+
+			"👤 Mijoz: %s\n"+
+			"📞 Telefon: %s\n"+
+			"💳 Umumiy qarzi: %d\n"+
+			"🕒 Sana: %s\n"+
+			"📄 Chek: %s\n",
+		name,
+		phoneNumber,
+		debt,
+		time.Now().Format("2006-01-02 15:04:05"),
+		
+		chek,
+	)
+
+	// encodedURL := url.PathEscape(chek)
+
+
+	tg := telegram.NewClient(r.config.Telegram.Token, r.config.Telegram.ChatID)
+	if err := tg.SendMessage(message); err != nil {
+		r.logger.Error("telegram send error: ", err)
+	}
 }

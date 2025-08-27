@@ -1,1 +1,5 @@
 DROP TABLE debt_logs;
+
+
+
+

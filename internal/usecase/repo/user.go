@@ -167,7 +167,7 @@ func (r *UserRepo) GetAll(ctx context.Context, req *entity.Filter, name string) 
 	FROM
 		users
 	WHERE
-		deleted_at = 0
+		deleted_at = 0 AND role = 'user'
 	`
 
 	var args []interface{}
