@@ -108,107 +108,94 @@ func (r *OrderRepo) Create(ctx context.Context, req *entity.OrderCreate) error {
 }
 
 func (r *OrderRepo) GetOrders(ctx context.Context, status string, user_id string) (*[]entity.OrderRes, error) {
-
 	res := []entity.OrderRes{}
 
 	query := `
 		SELECT
-			id,
-			status,
-			ST_Y(location::geometry) AS latitude,
-			ST_X(location::geometry) AS longitude,
-			description,
-			payment_type,
-			bucket_id
-		FROM
-			orders
-		WHERE
-			deleted_at = 0
-		`
+			o.id,
+			o.status,
+			ST_Y(o.location::geometry) AS latitude,
+			ST_X(o.location::geometry) AS longitude,
+			o.description,
+			o.payment_type,
+			b.id AS bucket_id,
+			bi.id,
+			bi.product_id,
+			p.name,
+			p.size,
+			p.type,
+			p.price AS product_price,
+			p.img_url,
+			bi.count,
+			bi.price,
+			b.total_price
+		FROM orders o
+		JOIN buckets b ON o.bucket_id = b.id
+		JOIN bucket_item bi ON b.id = bi.bucket_id
+		JOIN products p ON bi.product_id = p.id
+		WHERE o.deleted_at = 0
+	`
 
 	if status != "" {
-		query += fmt.Sprintf(" AND status = '%s'", status)
+		query += fmt.Sprintf(" AND o.status = '%s'", status)
 	}
 
 	if user_id != "" {
-		query += fmt.Sprintf(" AND user_id = '%s'", user_id)
+		query += fmt.Sprintf(" AND o.user_id = '%s'", user_id)
 	}
 
-	orderRows, err := r.pg.Pool.Query(ctx, query)
+	query += " ORDER BY o.id"
+
+	rows, err := r.pg.Pool.Query(ctx, query)
 	if err != nil {
 		return nil, err
 	}
-	defer orderRows.Close()
+	defer rows.Close()
 
-	for orderRows.Next() {
-		fmt.Println(11111111111)
-		order := entity.OrderRes{}
-		var bucket_id string
-		err = orderRows.Scan(
-			&order.ID,
+	ordersMap := make(map[string]*entity.OrderRes)
+
+	for rows.Next() {
+		var (
+			orderID  string
+			order    entity.OrderRes
+			item     entity.OrderItemRes
+			bucketID string
+		)
+
+		err := rows.Scan(
+			&orderID,
 			&order.Status,
 			&order.Location.Latitude,
 			&order.Location.Longitude,
 			&order.Description,
 			&order.PaymentType,
-			&bucket_id,
+			&bucketID,
+			&item.Id,
+			&item.ProductID,
+			&item.ProductName,
+			&item.ProductSize,
+			&item.ProductType,
+			&item.ProductPrice,
+			&item.ImgUrl,
+			&item.Count,
+			&item.Price,
+			&order.TotalPrice,
 		)
 		if err != nil {
 			return nil, err
 		}
 
-		itemQuery := `
-        SELECT
-            bi.id,
-            bi.product_id,
-            p.name,
-            p.size,
-            p.type,
-            p.price as product_price,
-            p.img_url,
-            bi.count,
-            bi.price,
-            b.total_price
-        FROM
-            buckets b 
-        JOIN bucket_item bi ON b.id = bi.bucket_id
-        JOIN products p ON bi.product_id = p.id
-        WHERE
-            b.id = $1
-        AND 
-            b.deleted_at = 0
-    `
-		itemRows, err := r.pg.Pool.Query(ctx, itemQuery, bucket_id)
-		if err != nil {
-			return nil, err
+		if _, ok := ordersMap[orderID]; !ok {
+			order.ID = orderID
+			order.Orders = []entity.OrderItemRes{}
+			ordersMap[orderID] = &order
 		}
 
-		items := []entity.OrderItemRes{}
-		for itemRows.Next() {
-				fmt.Println(22222222222)
-			var item entity.OrderItemRes
-			err = itemRows.Scan(
-				&item.Id,
-				&item.ProductID,
-				&item.ProductName,
-				&item.ProductSize,
-				&item.ProductType,
-				&item.ProductPrice,
-				&item.ImgUrl,
-				&item.Count,
-				&item.Price,
-				&order.TotalPrice,
-			)
-			if err != nil {
-				itemRows.Close()
-				return nil, err
-			}
-			items = append(items, item)
-		}
-		itemRows.Close()
+		ordersMap[orderID].Orders = append(ordersMap[orderID].Orders, item)
+	}
 
-		order.Orders = items
-		res = append(res, order)
+	for _, o := range ordersMap {
+		res = append(res, *o)
 	}
 
 	return &res, nil
